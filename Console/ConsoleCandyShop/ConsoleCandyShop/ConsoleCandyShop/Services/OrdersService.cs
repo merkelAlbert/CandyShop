@@ -6,7 +6,7 @@ using ConsoleCandyShop.Interfaces;
 
 namespace ConsoleCandyShop.Services
 {
-    public class OrderService : IOrderService
+    public class OrdersService : IOrdersService
     {
         private readonly List<Order> _ordersRepository = new List<Order>();
 

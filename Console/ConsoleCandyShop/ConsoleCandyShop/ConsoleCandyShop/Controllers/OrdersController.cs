@@ -5,11 +5,11 @@ using ConsoleCandyShop.Interfaces;
 
 namespace ConsoleCandyShop.Controllers
 {
-    public class OrderController
+    public class OrdersController
     {
-        private IOrderService _orderService;
+        private IOrdersService _orderService;
 
-        public OrderController(IOrderService orderService)
+        public OrdersController(IOrdersService orderService)
         {
             _orderService = orderService;
         }

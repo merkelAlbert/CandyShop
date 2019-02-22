@@ -10,7 +10,9 @@ namespace ConsoleCandyShop
     {
         static void Main(string[] args)
         {
-            var orderController = new OrderController(new OrderService());
+            var ordersController = new OrdersController(new OrdersService());
+            var pastriesController = new PastriesController(new PastriesService());
+
 
             var customer = new User("Альберт", "89106051944");
             var basket = new List<Pastry>();
@@ -19,20 +21,39 @@ namespace ConsoleCandyShop
             var order = new Order(basket, customer);
             var order1 = new Order(basket, customer);
 
-            orderController.AddOrder(order);
-            orderController.AddOrder(order1);
-            var orders = orderController.GetOrders();
-            foreach (var orderItem in orders)
+            var pastry = new Pastry(DAL.Enums.PastryType.Cookie,"cookie","",123m,"");
+            var pastry1 = new Pastry(DAL.Enums.PastryType.Cookie, "cookie1", "", 123m, "");
+            pastriesController.AddPastry(pastry);
+            pastriesController.AddPastry(pastry1);
+            foreach (var pastryitem in pastriesController.GetPastries())
             {
-                Console.WriteLine(orderItem.Id);
-                foreach (var pastry in orderItem.Pastries)
-                {
-                    Console.WriteLine(pastry.Name);
-                }
-
-                Console.WriteLine(order.User.Name);
+                Console.WriteLine(pastryitem.Id);
+                Console.WriteLine(pastryitem.Name);
                 Console.WriteLine();
             }
+            Console.WriteLine("-----");
+            pastriesController.DeletePastry(0);
+            foreach (var pastryitem in pastriesController.GetPastries())
+            {
+                Console.WriteLine(pastryitem.Id);
+                Console.WriteLine(pastryitem.Name);
+                Console.WriteLine();
+            }
+            //ordersController.AddOrder(order);
+            //ordersController.AddOrder(order1);
+            //var orders = ordersController.GetOrders();
+            //foreach (var orderItem in orders)
+            //{
+            //    Console.WriteLine(orderItem.Id);
+            //    foreach (var pastryItem in orderItem.Pastries)
+            //    {
+            //        Console.WriteLine(pastryItem.Name);
+            //    }
+
+            //    Console.WriteLine(order.User.Name);
+            //    Console.WriteLine();
+            //}
+            Console.ReadKey();
         }
     }
 }

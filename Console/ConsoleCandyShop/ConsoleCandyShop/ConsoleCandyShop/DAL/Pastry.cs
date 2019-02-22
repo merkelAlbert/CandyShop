@@ -4,7 +4,7 @@ namespace ConsoleCandyShop.DAL
 {
     public class Pastry
     {
-        //public Guid Id { get; set; }
+        public int Id { get; set; }
         public string Name { get; set; }
         public PastryType PastryType { get; set; }
         public string Description { get; set; }

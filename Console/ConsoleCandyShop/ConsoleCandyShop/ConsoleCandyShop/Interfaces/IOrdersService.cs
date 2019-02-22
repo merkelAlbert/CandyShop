@@ -3,7 +3,7 @@ using ConsoleCandyShop.DAL;
 
 namespace ConsoleCandyShop.Interfaces
 {
-    public interface IOrderService
+    public interface IOrdersService
     {
         Order GetOrder(int orderId);
         List<Order> GetOrders();
