@@ -6,7 +6,7 @@ using ConsoleCandyShop.DAL;
 
 namespace ConsoleCandyShop.Services
 {
-    public class UsersService:IUsersService
+    public class UsersService : IUsersService
     {
         private readonly List<User> _usersRepository = new List<User>();
 
@@ -17,7 +17,8 @@ namespace ConsoleCandyShop.Services
             {
                 return user;
             }
-            throw new InvalidOperationException("Пользователя с данным id не существует");
+
+            throw new InvalidOperationException("РџРѕР»СЊР·РѕРІР°С‚РµР»СЏ СЃ РґР°РЅРЅС‹Рј id РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚");
         }
 
         public List<User> GetUsers()
@@ -41,7 +42,7 @@ namespace ConsoleCandyShop.Services
             }
             else
             {
-                throw new InvalidOperationException("Пользователя с данным id не существует");
+                throw new InvalidOperationException("РџРѕР»СЊР·РѕРІР°С‚РµР»СЏ СЃ РґР°РЅРЅС‹Рј id РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚");
             }
         }
 
@@ -54,7 +55,7 @@ namespace ConsoleCandyShop.Services
             }
             else
             {
-                throw new InvalidOperationException("Пользователя с данным id не существует");
+                throw new InvalidOperationException("РџРѕР»СЊР·РѕРІР°С‚РµР»СЏ СЃ РґР°РЅРЅС‹Рј id РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚");
             }
         }
     }

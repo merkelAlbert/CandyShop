@@ -5,7 +5,7 @@ using System.Text;
 
 namespace ConsoleCandyShop.Interfaces
 {
-    interface IUsersService
+    public interface IUsersService
     {
         User GetUser(int userId);
         List<User> GetUsers();

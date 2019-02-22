@@ -5,7 +5,7 @@ using ConsoleCandyShop.Interfaces;
 
 namespace ConsoleCandyShop.Controllers
 {
-    class UsersController
+     public class UsersController
     {
         private IUsersService _userService;
 

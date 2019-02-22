@@ -18,7 +18,7 @@ namespace ConsoleCandyShop.Services
                 return pastry;
             }
 
-            throw new InvalidOperationException("Кондитерского изделие с данным id не существует");
+            throw new InvalidOperationException("РљРѕРЅРґРёС‚РµСЂСЃРєРѕРіРѕ РёР·РґРµР»РёСЏ СЃ РґР°РЅРЅС‹Рј id РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚");
         }
 
         public List<Pastry> GetPastries()
@@ -45,7 +45,7 @@ namespace ConsoleCandyShop.Services
             }
             else
             {
-                throw new InvalidOperationException("Кондитерского изделие с данным id не существует");
+                throw new InvalidOperationException("РљРѕРЅРґРёС‚РµСЂСЃРєРѕРіРѕ РёР·РґРµР»РёСЏ СЃ РґР°РЅРЅС‹Рј id РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚");
             }
         }
 
@@ -58,7 +58,7 @@ namespace ConsoleCandyShop.Services
             }
             else
             {
-                throw new InvalidOperationException("Кондитерского изделие с данным id не существует");
+                throw new InvalidOperationException("РљРѕРЅРґРёС‚РµСЂСЃРєРѕРіРѕ РёР·РґРµР»РёСЏ СЃ РґР°РЅРЅС‹Рј id РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚");
             }
         }
     }
