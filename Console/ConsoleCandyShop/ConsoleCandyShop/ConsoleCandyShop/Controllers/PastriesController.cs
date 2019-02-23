@@ -6,7 +6,7 @@ using ConsoleCandyShop.Interfaces;
 
 namespace ConsoleCandyShop.Controllers
 {
-    class PastriesController
+    public class PastriesController
     {
         private IPastriesService _pastryService;
 

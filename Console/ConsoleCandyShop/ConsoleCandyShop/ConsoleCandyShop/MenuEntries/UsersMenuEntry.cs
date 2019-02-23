@@ -31,7 +31,7 @@ namespace ConsoleCandyShop.MenuEntries
                 {
                     foreach (var user in _usersController.GetUsers())
                     {
-                        Console.WriteLine($"{user.Id} {user.Name} {user.Name}");
+                        Console.WriteLine($"{user.Id} | {user.Name} | {user.Phone}");
                     }
                 }),
                 new Handler("Получить пользователя", () =>
@@ -41,7 +41,7 @@ namespace ConsoleCandyShop.MenuEntries
                     var user = _usersController.GetUser(id);
                     if (user != null)
                     {
-                        Console.WriteLine($"{user.Id} {user.Name} {user.Name}");
+                        Console.WriteLine($"{user.Id} | {user.Name} | {user.Phone}");
                     }
                 }),
                 new Handler("Изменить пользователя", () =>

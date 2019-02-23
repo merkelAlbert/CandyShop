@@ -5,7 +5,7 @@ using ConsoleCandyShop.DAL;
 
 namespace ConsoleCandyShop.Interfaces
 {
-    interface IPastriesService
+    public interface IPastriesService
     {
         Pastry GetPastry(int pastryId);
         List<Pastry> GetPastries();

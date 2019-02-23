@@ -16,10 +16,12 @@ namespace ConsoleCandyShop
             var usersController = new UsersController(new UsersService());
 
             var usersMenuEntry = new UsersMenuEntry(usersController);
+            var pastriesMenuEntry = new PastriesMenuEntry(pastriesController);
 
             var menu = new Menu(new List<Entry>()
             {
                 usersMenuEntry.GetEntry(),
+                pastriesMenuEntry.GetEntry(),
             });
 
             menu.Run();
