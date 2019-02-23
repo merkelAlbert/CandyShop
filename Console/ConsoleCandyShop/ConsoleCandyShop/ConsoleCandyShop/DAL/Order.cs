@@ -8,10 +8,10 @@ namespace ConsoleCandyShop.DAL
         public List<Pastry> Pastries { get; set; }
         public User User { get; set; }
 
-        public Order(List<Pastry> pastries, User user)
+        public Order(User user, List<Pastry> pastries)
         {
-            Pastries = pastries;
             User = user;
+            Pastries = pastries;
         }
     }
 }
