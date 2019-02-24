@@ -8,11 +8,16 @@ namespace ConsoleCandyShop.Services
 {
     public class OrdersService : IOrdersService
     {
-        private readonly List<Order> _ordersRepository = new List<Order>();
+        private readonly Repository _repository;
+
+        public OrdersService(Repository repository)
+        {
+            _repository= repository;
+        }
 
         public Order GetOrder(int orderId)
         {
-            var order = _ordersRepository.FirstOrDefault(o => o.Id == orderId);
+            var order = _repository.Orders.FirstOrDefault(o => o.Id == orderId);
             if (order != null)
             {
                 return order;
@@ -23,18 +28,18 @@ namespace ConsoleCandyShop.Services
 
         public List<Order> GetOrders()
         {
-            return _ordersRepository;
+            return _repository.Orders;
         }
 
         public void AddOrder(Order order)
         {
-            order.Id = _ordersRepository.Count;
-            _ordersRepository.Add(order);
+            order.Id = _repository.Orders.Count;
+            _repository.Orders.Add(order);
         }
 
         public void UpdateOrder(int orderId, Order order)
         {
-            var storedOrder = _ordersRepository.FirstOrDefault(o => o.Id == orderId);
+            var storedOrder = _repository.Orders.FirstOrDefault(o => o.Id == orderId);
             if (storedOrder != null)
             {
                 storedOrder.User = order.User;
@@ -48,10 +53,10 @@ namespace ConsoleCandyShop.Services
 
         public void DeleteOrder(int orderId)
         {
-            var storedOrder = _ordersRepository.FirstOrDefault(o => o.Id == orderId);
+            var storedOrder = _repository.Orders.FirstOrDefault(o => o.Id == orderId);
             if (storedOrder != null)
             {
-                _ordersRepository.Remove(storedOrder);
+                _repository.Orders.Remove(storedOrder);
             }
             else
             {

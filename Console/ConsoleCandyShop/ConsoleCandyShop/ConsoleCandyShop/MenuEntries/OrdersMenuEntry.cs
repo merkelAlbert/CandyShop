@@ -13,7 +13,8 @@ namespace ConsoleCandyShop.MenuEntries
         private readonly UsersController _usersController;
         private readonly PastriesController _pastriesController;
 
-        public OrdersMenuEntry(OrdersController ordersController, UsersController usersController, PastriesController pastriesController)
+        public OrdersMenuEntry(OrdersController ordersController, UsersController usersController,
+            PastriesController pastriesController)
         {
             _ordersController = ordersController;
             _usersController = usersController;
@@ -30,38 +31,40 @@ namespace ConsoleCandyShop.MenuEntries
                     {
                         Console.WriteLine($"{userItem.Id} | {userItem.Name} | {userItem.Phone}");
                     }
+
                     Console.Write("id пользователя >> ");
                     var userId = int.Parse(Console.ReadLine());
                     var user = _usersController.GetUser(userId);
                     if (user != null)
                     {
-                        
-                            foreach (var pastryItem in _pastriesController.GetPastries())
+                        foreach (var pastryItem in _pastriesController.GetPastries())
+                        {
+                            Console.WriteLine(
+                                $"{pastryItem.Id} | {pastryItem.Name} | " +
+                                $"{pastryItem.PastryType.ToString()} | " +
+                                $"{pastryItem.Description} | " +
+                                $"{pastryItem.Price} | " +
+                                $"{pastryItem.Compound}");
+                        }
+
+                        var pastriesList = new List<Pastry>();
+                        ConsoleKeyInfo input = new ConsoleKeyInfo();
+                        while (input.Key != ConsoleKey.N)
+                        {
+                            Console.Write("id кондитерского изделия >> ");
+                            var pastryId = int.Parse(Console.ReadLine());
+                            var pastry = _pastriesController.GetPastry(pastryId);
+                            if (pastry != null)
                             {
-                                Console.WriteLine(
-                                    $"{pastryItem.Id} | {pastryItem.Name} | " +
-                                    $"{pastryItem.PastryType.ToString()} | " +
-                                    $"{pastryItem.Description} | " +
-                                    $"{pastryItem.Price} | " +
-                                    $"{pastryItem.Compound}");
+                                pastriesList.Add(pastry);
+                                Console.Write("Ещё (*/N) >> ");
+                                input = Console.ReadKey();
+                                Console.WriteLine();
                             }
-                            var pastriesList = new List<Pastry>();
-                            ConsoleKeyInfo input = new ConsoleKeyInfo();
-                            while (input.Key != ConsoleKey.N)
-                            {
-                                Console.Write("id кондитерского изделия >> ");
-                                var pastryId = int.Parse(Console.ReadLine());
-                                var pastry = _pastriesController.GetPastry(pastryId);
-                                if (pastry != null)
-                                {
-                                    pastriesList.Add(pastry);
-                                    Console.Write("Ещё (*/N) >> ");
-                                    input = Console.ReadKey();
-                                    Console.WriteLine();   
-                                }
-                            }
-                            var order = new Order(user, pastriesList);
-                            _ordersController.AddOrder(order);
+                        }
+
+                        var order = new Order(user, pastriesList);
+                        _ordersController.AddOrder(order);
                     }
                 }),
                 new Handler("Получить заказы", () =>
@@ -74,12 +77,13 @@ namespace ConsoleCandyShop.MenuEntries
                         foreach (var pastryItem in order.Pastries)
                         {
                             Console.WriteLine(
-                                    $"{pastryItem.Id} | {pastryItem.Name} | " +
-                                    $"{pastryItem.PastryType.ToString()} | " +
-                                    $"{pastryItem.Description} | " +
-                                    $"{pastryItem.Price} | " +
-                                    $"{pastryItem.Compound}");
+                                $"{pastryItem.Id} | {pastryItem.Name} | " +
+                                $"{pastryItem.PastryType.ToString()} | " +
+                                $"{pastryItem.Description} | " +
+                                $"{pastryItem.Price} | " +
+                                $"{pastryItem.Compound}");
                         }
+
                         Console.WriteLine();
                     }
                 }),
@@ -96,11 +100,11 @@ namespace ConsoleCandyShop.MenuEntries
                         foreach (var pastryItem in order.Pastries)
                         {
                             Console.WriteLine(
-                                    $"{pastryItem.Id} | {pastryItem.Name} | " +
-                                    $"{pastryItem.PastryType.ToString()} | " +
-                                    $"{pastryItem.Description} | " +
-                                    $"{pastryItem.Price} | " +
-                                    $"{pastryItem.Compound}");
+                                $"{pastryItem.Id} | {pastryItem.Name} | " +
+                                $"{pastryItem.PastryType.ToString()} | " +
+                                $"{pastryItem.Description} | " +
+                                $"{pastryItem.Price} | " +
+                                $"{pastryItem.Compound}");
                         }
                     }
                 }),
@@ -114,30 +118,32 @@ namespace ConsoleCandyShop.MenuEntries
                         foreach (var pastryItem in _pastriesController.GetPastries())
                         {
                             Console.WriteLine(
-                                    $"{pastryItem.Id} | {pastryItem.Name} | " +
-                                    $"{pastryItem.PastryType.ToString()} | " +
-                                    $"{pastryItem.Description} | " +
-                                    $"{pastryItem.Price} | " +
-                                    $"{pastryItem.Compound}");
+                                $"{pastryItem.Id} | {pastryItem.Name} | " +
+                                $"{pastryItem.PastryType.ToString()} | " +
+                                $"{pastryItem.Description} | " +
+                                $"{pastryItem.Price} | " +
+                                $"{pastryItem.Compound}");
                         }
+
                         var pastriesList = new List<Pastry>();
                         ConsoleKeyInfo input = new ConsoleKeyInfo();
-                            while (input.Key != ConsoleKey.N)
+                        while (input.Key != ConsoleKey.N)
+                        {
+                            Console.Write("id кондитерского изделия >> ");
+                            var pastryId = int.Parse(Console.ReadLine());
+                            var pastry = _pastriesController.GetPastry(pastryId);
+                            if (pastry != null)
                             {
-                                Console.Write("id кондитерского изделия >> ");
-                                var pastryId = int.Parse(Console.ReadLine());
-                                var pastry = _pastriesController.GetPastry(pastryId);
-                                if (pastry != null)
-                                {
-                                    pastriesList.Add(pastry);
-                                    Console.Write("Ещё (Y/N) >> ");
-                                    input = Console.ReadKey();
-                                    Console.WriteLine();
-                                }
+                                pastriesList.Add(pastry);
+                                Console.Write("Ещё (Y/N) >> ");
+                                input = Console.ReadKey();
+                                Console.WriteLine();
                             }
-                            var order = new Order(storedOrder.User, pastriesList);
-                            _ordersController.UpdateOrder(id, order);
-                        }                
+                        }
+
+                        var order = new Order(storedOrder.User, pastriesList);
+                        _ordersController.UpdateOrder(id, order);
+                    }
                 }),
                 new Handler("Удалить заказ", () =>
                 {

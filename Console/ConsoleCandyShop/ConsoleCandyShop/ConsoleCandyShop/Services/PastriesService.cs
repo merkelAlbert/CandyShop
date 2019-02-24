@@ -8,11 +8,16 @@ namespace ConsoleCandyShop.Services
 {
     public class PastriesService : IPastriesService
     {
-        private readonly List<Pastry> _pastriesRepository = new List<Pastry>();
+        private readonly Repository _repository;
+
+        public PastriesService(Repository repository)
+        {
+            _repository = repository;
+        }
 
         public Pastry GetPastry(int pastryId)
         {
-            var pastry = _pastriesRepository.FirstOrDefault(p => p.Id == pastryId);
+            var pastry = _repository.Pastries.FirstOrDefault(p => p.Id == pastryId);
             if (pastry != null)
             {
                 return pastry;
@@ -23,18 +28,18 @@ namespace ConsoleCandyShop.Services
 
         public List<Pastry> GetPastries()
         {
-            return _pastriesRepository;
+            return _repository.Pastries;
         }
 
         public void AddPastry(Pastry pastry)
         {
-            pastry.Id = _pastriesRepository.Count;
-            _pastriesRepository.Add(pastry);
+            pastry.Id = _repository.Pastries.Count;
+            _repository.Pastries.Add(pastry);
         }
 
         public void UpdatePastry(int pastryId, Pastry pastry)
         {
-            var storedPastry = _pastriesRepository.FirstOrDefault(p => p.Id == pastryId);
+            var storedPastry = _repository.Pastries.FirstOrDefault(p => p.Id == pastryId);
             if (storedPastry != null)
             {
                 storedPastry.Compound = pastry.Compound;
@@ -51,10 +56,10 @@ namespace ConsoleCandyShop.Services
 
         public void DeletePastry(int pastryId)
         {
-            var storedPastry = _pastriesRepository.FirstOrDefault(p => p.Id == pastryId);
+            var storedPastry = _repository.Pastries.FirstOrDefault(p => p.Id == pastryId);
             if (storedPastry != null)
             {
-                _pastriesRepository.Remove(storedPastry);
+                _repository.Pastries.Remove(storedPastry);
             }
             else
             {

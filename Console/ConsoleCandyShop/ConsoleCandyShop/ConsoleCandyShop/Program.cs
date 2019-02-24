@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using Castle.MicroKernel.Registration;
+using Castle.Windsor;
 using ConsoleCandyShop.Controllers;
 using ConsoleCandyShop.DAL;
+using ConsoleCandyShop.Installers;
+using ConsoleCandyShop.Interfaces;
 using ConsoleCandyShop.MenuEntries;
 using ConsoleCandyShop.Services;
 
@@ -11,13 +15,15 @@ namespace ConsoleCandyShop
     {
         static void Main(string[] args)
         {
-            var ordersController = new OrdersController(new OrdersService());
-            var pastriesController = new PastriesController(new PastriesService());
-            var usersController = new UsersController(new UsersService());
+            var container = new WindsorContainer();
+            container.Install(new RepositoryInstaller(),
+                new ServicesInstaller(),
+                new ControllersInstaller(),
+                new MenuEntriesInstaller());
 
-            var usersMenuEntry = new UsersMenuEntry(usersController);
-            var pastriesMenuEntry = new PastriesMenuEntry(pastriesController);
-            var ordersMenuEntry = new OrdersMenuEntry(ordersController, usersController, pastriesController);
+            var usersMenuEntry = container.Resolve<UsersMenuEntry>();
+            var pastriesMenuEntry = container.Resolve<PastriesMenuEntry>();
+            var ordersMenuEntry = container.Resolve<OrdersMenuEntry>();
 
             var menu = new Menu(new List<Entry>()
             {
@@ -27,6 +33,7 @@ namespace ConsoleCandyShop
             });
 
             menu.Run();
+            container.Dispose();
         }
     }
 }

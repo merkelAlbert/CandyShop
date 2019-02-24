@@ -8,11 +8,16 @@ namespace ConsoleCandyShop.Services
 {
     public class UsersService : IUsersService
     {
-        private readonly List<User> _usersRepository = new List<User>();
+        private readonly Repository _repository;
+
+        public UsersService(Repository repository)
+        {
+            _repository = repository;
+        }
 
         public User GetUser(int userId)
         {
-            var user = _usersRepository.FirstOrDefault(u => u.Id == userId);
+            var user = _repository.Users.FirstOrDefault(u => u.Id == userId);
             if (user != null)
             {
                 return user;
@@ -23,18 +28,18 @@ namespace ConsoleCandyShop.Services
 
         public List<User> GetUsers()
         {
-            return _usersRepository;
+            return _repository.Users;
         }
 
         public void AddUser(User user)
         {
-            user.Id = _usersRepository.Count;
-            _usersRepository.Add(user);
+            user.Id = _repository.Users.Count;
+            _repository.Users.Add(user);
         }
 
         public void UpdateUser(int userId, User user)
         {
-            var storedUser = _usersRepository.FirstOrDefault(u => u.Id == userId);
+            var storedUser = _repository.Users.FirstOrDefault(u => u.Id == userId);
             if (storedUser != null)
             {
                 storedUser.Name = user.Name;
@@ -48,10 +53,10 @@ namespace ConsoleCandyShop.Services
 
         public void DeleteUser(int userId)
         {
-            var storedUser = _usersRepository.FirstOrDefault(u => u.Id == userId);
+            var storedUser = _repository.Users.FirstOrDefault(u => u.Id == userId);
             if (storedUser != null)
             {
-                _usersRepository.Remove(storedUser);
+                _repository.Users.Remove(storedUser);
             }
             else
             {
