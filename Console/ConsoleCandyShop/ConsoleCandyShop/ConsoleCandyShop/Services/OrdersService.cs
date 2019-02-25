@@ -4,22 +4,26 @@ using System.Linq;
 using Castle.Core;
 using ConsoleCandyShop.DAL;
 using ConsoleCandyShop.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace ConsoleCandyShop.Services
 {
     [Interceptor("Benchmark")]
     public class OrdersService : IOrdersService
     {
-        private readonly Repository _repository;
+        private readonly DatabaseContext _databaseContext;
 
-        public OrdersService(Repository repository)
+        public OrdersService(DatabaseContext databaseContext)
         {
-            _repository= repository;
+            _databaseContext = databaseContext;
         }
 
         public Order GetOrder(int orderId)
         {
-            var order = _repository.Orders.FirstOrDefault(o => o.Id == orderId);
+            var order = _databaseContext.Orders
+                .Include(o => o.User)
+                .Include(o => o.Pastries)
+                .FirstOrDefault(o => o.Id == orderId);
             if (order != null)
             {
                 return order;
@@ -30,22 +34,27 @@ namespace ConsoleCandyShop.Services
 
         public List<Order> GetOrders()
         {
-            return _repository.Orders;
+            return _databaseContext.Orders
+                .Include(o => o.User)
+                .Include(o => o.Pastries).ToList();
         }
 
         public void AddOrder(Order order)
         {
-            order.Id = _repository.Orders.Count;
-            _repository.Orders.Add(order);
+            order.Id = _databaseContext.Orders.ToList().Count;
+            _databaseContext.Orders.Add(order);
+            _databaseContext.SaveChanges();
         }
 
         public void UpdateOrder(int orderId, Order order)
         {
-            var storedOrder = _repository.Orders.FirstOrDefault(o => o.Id == orderId);
+            var storedOrder = _databaseContext.Orders
+                .FirstOrDefault(o => o.Id == orderId);
             if (storedOrder != null)
             {
                 storedOrder.User = order.User;
                 storedOrder.Pastries = order.Pastries;
+                _databaseContext.SaveChanges();
             }
             else
             {
@@ -55,10 +64,11 @@ namespace ConsoleCandyShop.Services
 
         public void DeleteOrder(int orderId)
         {
-            var storedOrder = _repository.Orders.FirstOrDefault(o => o.Id == orderId);
+            var storedOrder = _databaseContext.Orders.FirstOrDefault(o => o.Id == orderId);
             if (storedOrder != null)
             {
-                _repository.Orders.Remove(storedOrder);
+                _databaseContext.Orders.Remove(storedOrder);
+                _databaseContext.SaveChanges();
             }
             else
             {

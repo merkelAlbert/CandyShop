@@ -10,16 +10,16 @@ namespace ConsoleCandyShop.Services
     [Interceptor("Benchmark")]
     public class PastriesService : IPastriesService
     {
-        private readonly Repository _repository;
+        private readonly DatabaseContext _databaseContext;
 
-        public PastriesService(Repository repository)
+        public PastriesService(DatabaseContext databaseContext)
         {
-            _repository = repository;
+            _databaseContext = databaseContext;
         }
 
         public Pastry GetPastry(int pastryId)
         {
-            var pastry = _repository.Pastries.FirstOrDefault(p => p.Id == pastryId);
+            var pastry = _databaseContext.Pastries.FirstOrDefault(p => p.Id == pastryId);
             if (pastry != null)
             {
                 return pastry;
@@ -30,18 +30,19 @@ namespace ConsoleCandyShop.Services
 
         public List<Pastry> GetPastries()
         {
-            return _repository.Pastries;
+            return _databaseContext.Pastries.ToList();
         }
 
         public void AddPastry(Pastry pastry)
         {
-            pastry.Id = _repository.Pastries.Count;
-            _repository.Pastries.Add(pastry);
+            pastry.Id = _databaseContext.Pastries.ToList().Count;
+            _databaseContext.Pastries.Add(pastry);
+            _databaseContext.SaveChanges();
         }
 
         public void UpdatePastry(int pastryId, Pastry pastry)
         {
-            var storedPastry = _repository.Pastries.FirstOrDefault(p => p.Id == pastryId);
+            var storedPastry = _databaseContext.Pastries.FirstOrDefault(p => p.Id == pastryId);
             if (storedPastry != null)
             {
                 storedPastry.Compound = pastry.Compound;
@@ -49,6 +50,7 @@ namespace ConsoleCandyShop.Services
                 storedPastry.Name = pastry.Name;
                 storedPastry.PastryType = pastry.PastryType;
                 storedPastry.Price = pastry.Price;
+                _databaseContext.SaveChanges();
             }
             else
             {
@@ -58,10 +60,11 @@ namespace ConsoleCandyShop.Services
 
         public void DeletePastry(int pastryId)
         {
-            var storedPastry = _repository.Pastries.FirstOrDefault(p => p.Id == pastryId);
+            var storedPastry = _databaseContext.Pastries.FirstOrDefault(p => p.Id == pastryId);
             if (storedPastry != null)
             {
-                _repository.Pastries.Remove(storedPastry);
+                _databaseContext.Pastries.Remove(storedPastry);
+                _databaseContext.SaveChanges();
             }
             else
             {

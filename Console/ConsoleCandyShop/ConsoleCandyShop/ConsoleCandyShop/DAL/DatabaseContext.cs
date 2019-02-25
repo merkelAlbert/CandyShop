@@ -8,8 +8,8 @@ namespace ConsoleCandyShop.DAL
         {
         }
 
-        DbSet<User> Users { get; set; }
-        DbSet<Order> Orders { get; set; }
-        DbSet<Pastry> Pastries { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<Pastry> Pastries { get; set; }
     }
 }

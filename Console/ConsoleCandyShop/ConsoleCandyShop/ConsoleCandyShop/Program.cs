@@ -16,8 +16,7 @@ namespace ConsoleCandyShop
         static void Main(string[] args)
         {
             var container = new WindsorContainer();
-            container.Install(new DatabaseContextInstaller(),
-                new RepositoryInstaller(),
+            container.Install(
                 new InterceptorsInstaller(),
                 new ServicesInstaller(),
                 new ControllersInstaller(),

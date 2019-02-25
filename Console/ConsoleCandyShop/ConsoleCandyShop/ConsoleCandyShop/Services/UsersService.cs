@@ -10,17 +10,17 @@ namespace ConsoleCandyShop.Services
     [Interceptor("Benchmark")]
     public class UsersService : IUsersService
     {
-        private readonly Repository _repository;
+        private readonly DatabaseContext _databaseContext;
 
-        public UsersService(Repository repository)
+        public UsersService(DatabaseContext databaseContext)
         {
-            _repository = repository;
+            _databaseContext = databaseContext;
         }
 
         
         public User GetUser(int userId)
         {
-            var user = _repository.Users.FirstOrDefault(u => u.Id == userId);
+            var user = _databaseContext.Users.FirstOrDefault(u => u.Id == userId);
             if (user != null)
             {
                 return user;
@@ -31,22 +31,24 @@ namespace ConsoleCandyShop.Services
 
         public List<User> GetUsers()
         {
-            return _repository.Users;
+            return _databaseContext.Users.ToList();
         }
 
         public void AddUser(User user)
         {
-            user.Id = _repository.Users.Count;
-            _repository.Users.Add(user);
+            user.Id = _databaseContext.Users.ToList().Count;
+            _databaseContext.Users.Add(user);
+            _databaseContext.SaveChanges();
         }
 
         public void UpdateUser(int userId, User user)
         {
-            var storedUser = _repository.Users.FirstOrDefault(u => u.Id == userId);
+            var storedUser = _databaseContext.Users.FirstOrDefault(u => u.Id == userId);
             if (storedUser != null)
             {
                 storedUser.Name = user.Name;
                 storedUser.Phone = user.Phone;
+                _databaseContext.SaveChanges();
             }
             else
             {
@@ -56,10 +58,12 @@ namespace ConsoleCandyShop.Services
 
         public void DeleteUser(int userId)
         {
-            var storedUser = _repository.Users.FirstOrDefault(u => u.Id == userId);
+            var storedUser = _databaseContext.Users.FirstOrDefault(u => u.Id == userId);
             if (storedUser != null)
             {
-                _repository.Users.Remove(storedUser);
+                _databaseContext.Users.Remove(storedUser);
+                _databaseContext.SaveChanges();
+                    
             }
             else
             {
