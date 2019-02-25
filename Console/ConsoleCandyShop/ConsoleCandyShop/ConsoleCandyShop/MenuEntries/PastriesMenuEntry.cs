@@ -21,7 +21,7 @@ namespace ConsoleCandyShop.MenuEntries
             {
                 new Handler("Добавить кондитерское изделие", () =>
                 {
-                    Console.Write("name >> ");
+                    Console.Write("название >> ");
                     var name = Console.ReadLine();
 
                     var types = Enum.GetNames(typeof(PastryType));
@@ -30,13 +30,13 @@ namespace ConsoleCandyShop.MenuEntries
                         Console.WriteLine($"{i}. {types[i]}");
                     }
 
-                    Console.Write("type >> ");
+                    Console.Write("тип >> ");
                     var type = int.Parse(Console.ReadLine());
-                    Console.Write("description >> ");
+                    Console.Write("описание >> ");
                     var description = Console.ReadLine();
-                    Console.Write("price >> ");
+                    Console.Write("цена >> ");
                     var price = decimal.Parse(Console.ReadLine());
-                    Console.Write("compound >> ");
+                    Console.Write("состав >> ");
                     var compound = Console.ReadLine();
 
                     var pastry = new Pastry((PastryType) type, name, description, price, compound);
@@ -56,7 +56,7 @@ namespace ConsoleCandyShop.MenuEntries
                 }),
                 new Handler("Получить кондитерское изделие", () =>
                 {
-                    Console.Write("id >> ");
+                    Console.Write("id кондитерского изделия >> ");
                     var id = int.Parse(Console.ReadLine());
                     var pastry = _pastriesController.GetPastry(id);
                     if (pastry != null)
@@ -71,11 +71,11 @@ namespace ConsoleCandyShop.MenuEntries
                 }),
                 new Handler("Изменить кондитерское изделие", () =>
                 {
-                    Console.Write("id >> ");
+                    Console.Write("id кондитерского изделия >> ");
                     var id = int.Parse(Console.ReadLine());
                     if (_pastriesController.GetPastry(id) != null)
                     {
-                        Console.Write("name >> ");
+                        Console.Write("название >> ");
                         var name = Console.ReadLine();
 
                         var types = Enum.GetNames(typeof(PastryType));
@@ -84,13 +84,13 @@ namespace ConsoleCandyShop.MenuEntries
                             Console.WriteLine($"{i}. {types[i]}");
                         }
 
-                        Console.Write("type >> ");
+                        Console.Write("тип >> ");
                         var type = int.Parse(Console.ReadLine());
-                        Console.Write("description >> ");
+                        Console.Write("описание >> ");
                         var description = Console.ReadLine();
-                        Console.Write("price >> ");
+                        Console.Write("цена >> ");
                         var price = decimal.Parse(Console.ReadLine());
-                        Console.Write("compound >> ");
+                        Console.Write("состав >> ");
                         var compound = Console.ReadLine();
 
                         var pastry = new Pastry((PastryType) type, name, description, price, compound);
@@ -99,7 +99,7 @@ namespace ConsoleCandyShop.MenuEntries
                 }),
                 new Handler("Удалить кондитерское изделие", () =>
                 {
-                    Console.Write("id >> ");
+                    Console.Write("id кондитерского изделия >> ");
                     var id = int.Parse(Console.ReadLine());
                     if (_pastriesController.GetPastry(id) != null)
                     {

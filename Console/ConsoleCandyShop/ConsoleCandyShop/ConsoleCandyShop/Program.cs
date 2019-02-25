@@ -17,6 +17,7 @@ namespace ConsoleCandyShop
         {
             var container = new WindsorContainer();
             container.Install(new RepositoryInstaller(),
+                new InterceptorsInstaller(),
                 new ServicesInstaller(),
                 new ControllersInstaller(),
                 new MenuEntriesInstaller());

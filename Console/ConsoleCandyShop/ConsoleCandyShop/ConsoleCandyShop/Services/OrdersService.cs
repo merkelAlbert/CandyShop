@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Castle.Core;
 using ConsoleCandyShop.DAL;
 using ConsoleCandyShop.Interfaces;
 
 namespace ConsoleCandyShop.Services
 {
+    [Interceptor("Benchmark")]
     public class OrdersService : IOrdersService
     {
         private readonly Repository _repository;

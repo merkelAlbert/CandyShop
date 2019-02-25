@@ -1,6 +1,7 @@
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
+using ConsoleCandyShop.Interceptors;
 using ConsoleCandyShop.Interfaces;
 using ConsoleCandyShop.Services;
 

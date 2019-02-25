@@ -89,7 +89,7 @@ namespace ConsoleCandyShop.MenuEntries
                 }),
                 new Handler("Получить заказ", () =>
                 {
-                    Console.Write("id >> ");
+                    Console.Write("id заказа >> ");
                     var id = int.Parse(Console.ReadLine());
                     var order = _ordersController.GetOrder(id);
                     if (order != null)
@@ -110,7 +110,7 @@ namespace ConsoleCandyShop.MenuEntries
                 }),
                 new Handler("Изменить заказ", () =>
                 {
-                    Console.Write("id >> ");
+                    Console.Write("id заказа >> ");
                     var id = int.Parse(Console.ReadLine());
                     var storedOrder = _ordersController.GetOrder(id);
                     if (storedOrder != null)
@@ -135,7 +135,7 @@ namespace ConsoleCandyShop.MenuEntries
                             if (pastry != null)
                             {
                                 pastriesList.Add(pastry);
-                                Console.Write("Ещё (Y/N) >> ");
+                                Console.Write("Ещё (*/N) >> ");
                                 input = Console.ReadKey();
                                 Console.WriteLine();
                             }
@@ -147,7 +147,7 @@ namespace ConsoleCandyShop.MenuEntries
                 }),
                 new Handler("Удалить заказ", () =>
                 {
-                    Console.Write("id >> ");
+                    Console.Write("id заказа >> ");
                     var id = int.Parse(Console.ReadLine());
                     if (_ordersController.GetOrder(id) != null)
                     {

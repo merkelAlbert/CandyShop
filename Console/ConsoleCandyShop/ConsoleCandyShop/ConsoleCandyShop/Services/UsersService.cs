@@ -2,10 +2,12 @@ using ConsoleCandyShop.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Castle.Core;
 using ConsoleCandyShop.DAL;
 
 namespace ConsoleCandyShop.Services
 {
+    [Interceptor("Benchmark")]
     public class UsersService : IUsersService
     {
         private readonly Repository _repository;
@@ -15,6 +17,7 @@ namespace ConsoleCandyShop.Services
             _repository = repository;
         }
 
+        
         public User GetUser(int userId)
         {
             var user = _repository.Users.FirstOrDefault(u => u.Id == userId);

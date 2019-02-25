@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using Castle.Core;
 using ConsoleCandyShop.DAL;
+using ConsoleCandyShop.Interceptors;
 using ConsoleCandyShop.Interfaces;
 
 namespace ConsoleCandyShop.Controllers
 {
-     public class UsersController
+    public class UsersController
     {
         private IUsersService _userService;
 

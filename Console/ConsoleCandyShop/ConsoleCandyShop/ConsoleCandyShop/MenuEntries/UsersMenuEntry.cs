@@ -20,9 +20,9 @@ namespace ConsoleCandyShop.MenuEntries
             {
                 new Handler("Добавить пользователя", () =>
                 {
-                    Console.Write("name >> ");
+                    Console.Write("имя >> ");
                     var name = Console.ReadLine();
-                    Console.Write("phone >> ");
+                    Console.Write("телефон >> ");
                     var phone = Console.ReadLine();
                     var user = new User(name, phone);
                     _usersController.AddUser(user);
@@ -36,7 +36,7 @@ namespace ConsoleCandyShop.MenuEntries
                 }),
                 new Handler("Получить пользователя", () =>
                 {
-                    Console.Write("id >> ");
+                    Console.Write("id пользователя >> ");
                     var id = int.Parse(Console.ReadLine());
                     var user = _usersController.GetUser(id);
                     if (user != null)
@@ -46,13 +46,13 @@ namespace ConsoleCandyShop.MenuEntries
                 }),
                 new Handler("Изменить пользователя", () =>
                 {
-                    Console.Write("id >> ");
+                    Console.Write("id пользователя >> ");
                     var id = int.Parse(Console.ReadLine());
                     if (_usersController.GetUser(id) != null)
                     {
-                        Console.Write("name >> ");
+                        Console.Write("имя >> ");
                         var name = Console.ReadLine();
-                        Console.Write("phone >> ");
+                        Console.Write("телефон >> ");
                         var phone = Console.ReadLine();
                         var user = new User(name, phone);
                         _usersController.UpdateUser(id, user);
@@ -60,7 +60,7 @@ namespace ConsoleCandyShop.MenuEntries
                 }),
                 new Handler("Удалить пользователя", () =>
                 {
-                    Console.Write("id >> ");
+                    Console.Write("id пользователя >> ");
                     var id = int.Parse(Console.ReadLine());
                     if (_usersController.GetUser(id) != null)
                     {
