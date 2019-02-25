@@ -16,11 +16,13 @@ namespace ConsoleCandyShop
         static void Main(string[] args)
         {
             var container = new WindsorContainer();
-            container.Install(new RepositoryInstaller(),
+            container.Install(new DatabaseContextInstaller(),
+                new RepositoryInstaller(),
                 new InterceptorsInstaller(),
                 new ServicesInstaller(),
                 new ControllersInstaller(),
-                new MenuEntriesInstaller());
+                new MenuEntriesInstaller()
+                );
 
             var usersMenuEntry = container.Resolve<UsersMenuEntry>();
             var pastriesMenuEntry = container.Resolve<PastriesMenuEntry>();
