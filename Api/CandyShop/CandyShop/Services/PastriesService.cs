@@ -59,7 +59,7 @@ namespace CandyShop.Services
 
         public async Task<Guid> DeletePastry(Guid pastryId)
         {
-            var storedPastry = await _databaseContext.Users.FirstOrDefaultAsync(p => p.Id == pastryId);
+            var storedPastry = await _databaseContext.Pastries.FirstOrDefaultAsync(p => p.Id == pastryId);
             if (storedPastry == null) throw new InvalidOperationException("Кондитерского изделия с данным id не существует");
             _databaseContext.Pastries.Remove(storedPastry);
             await _databaseContext.SaveChangesAsync();
