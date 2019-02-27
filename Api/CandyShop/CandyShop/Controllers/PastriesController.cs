@@ -42,7 +42,7 @@ namespace CandyShop.Controllers
         }
 
         [HttpGet]
-        [Route("{userId}")]
+        [Route("{pastryId}")]
         public async Task<object> GetPastry([FromRoute] Guid pastryId)
         {
             try
@@ -57,7 +57,7 @@ namespace CandyShop.Controllers
 
 
         [HttpPut]
-        [Route("{userId}")]
+        [Route("{pastryId}")]
         public async Task<object> UpdatePastry([FromRoute] Guid pastryId, [FromBody] PastryInfo pastryInfo)
         {
             try
@@ -71,7 +71,7 @@ namespace CandyShop.Controllers
         }
 
         [HttpDelete]
-        [Route("{userId}")]
+        [Route("{pastryId}")]
         public async Task<object> DeletePastry([FromRoute] Guid pastryId)
         {
             try

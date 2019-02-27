@@ -59,6 +59,7 @@ namespace CandyShop
 
             services.AddScoped<IUsersService, UsersService>();
             services.AddScoped<IPastriesService, PastriesService>();
+            services.AddScoped<IOrdersService, OrdersService>();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
