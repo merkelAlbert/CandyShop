@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 using CandyShop.DAL;
 using CandyShop.DAL.Models;
 using CandyShop.DTO;
+using CandyShop.DTO.Pastries;
+using CandyShop.DTO.Users;
+using CandyShop.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace CandyShop.Services
@@ -18,7 +21,7 @@ namespace CandyShop.Services
             _databaseContext = databaseContext;
         }
 
-        public async Task<Pastry> AddPastry(PastryInfo pastryInfo)
+        private Pastry MapPastryFromInfo(PastryInfo pastryInfo)
         {
             var pastry = new Pastry()
             {
@@ -28,39 +31,70 @@ namespace CandyShop.Services
                 Price = pastryInfo.Price,
                 Compound = pastryInfo.Compound
             };
-            _databaseContext.Pastries.Add(pastry);
-            await _databaseContext.SaveChangesAsync();
             return pastry;
         }
 
-        public async Task<List<Pastry>> GetPastries()
+        private PastryModel MapPastryModelFromPastry(Pastry pastry)
         {
-            return await _databaseContext.Pastries.ToListAsync();
+            var pastryModel = new PastryModel()
+            {
+                Id = pastry.Id,
+                Name = pastry.Name,
+                PastryType = pastry.PastryType,
+                Description = pastry.Description,
+                Price = pastry.Price,
+                Compound = pastry.Compound
+            };
+            return pastryModel;
         }
 
-        public async Task<Pastry> GetPastry(Guid pastryId)
+        public async Task<PastryModel> AddPastry(PastryInfo pastryInfo)
+        {
+            var pastry = MapPastryFromInfo(pastryInfo);
+            _databaseContext.Pastries.Add(pastry);
+            await _databaseContext.SaveChangesAsync();
+            return MapPastryModelFromPastry(pastry);
+        }
+
+        public async Task<List<PastryModel>> GetPastries()
+        {
+            var pastries = await _databaseContext.Pastries.ToListAsync();
+            var pastryModels = new List<PastryModel>();
+            foreach (var pastry in pastries)
+            {
+                pastryModels.Add(MapPastryModelFromPastry(pastry));
+            }
+
+            return pastryModels;
+        }
+
+        public async Task<PastryModel> GetPastry(Guid pastryId)
         {
             var pastry = await _databaseContext.Pastries.FirstOrDefaultAsync(p => p.Id == pastryId);
-            return pastry ?? throw new InvalidOperationException("Кондитерского изделия с данным id не существует");
+            if (pastry != null)
+            {
+                return MapPastryModelFromPastry(pastry);
+            }
+
+            throw new InvalidOperationException("Кондитерского изделия с данным id не существует");
         }
 
-        public async Task<Pastry> UpdatePastry(Guid pastryId, PastryInfo pastryInfo)
+        public async Task<PastryModel> UpdatePastry(Guid pastryId, PastryInfo pastryInfo)
         {
             var storedPastry = await _databaseContext.Pastries.FirstOrDefaultAsync(p => p.Id == pastryId);
-            if (storedPastry == null) throw new InvalidOperationException("Кондитерского изделия с данным id не существует");
-            storedPastry.Name = pastryInfo.Name;
-            storedPastry.PastryType = pastryInfo.PastryType;
-            storedPastry.Description = pastryInfo.Description;
-            storedPastry.Price = pastryInfo.Price;
-            storedPastry.Compound = pastryInfo.Compound;
+            if (storedPastry == null)
+                throw new InvalidOperationException("Кондитерского изделия с данным id не существует");
+            storedPastry = MapPastryFromInfo(pastryInfo);
+            storedPastry.Id = pastryId;
             await _databaseContext.SaveChangesAsync();
-            return storedPastry;
+            return MapPastryModelFromPastry(storedPastry);
         }
 
         public async Task<Guid> DeletePastry(Guid pastryId)
         {
             var storedPastry = await _databaseContext.Pastries.FirstOrDefaultAsync(p => p.Id == pastryId);
-            if (storedPastry == null) throw new InvalidOperationException("Кондитерского изделия с данным id не существует");
+            if (storedPastry == null)
+                throw new InvalidOperationException("Кондитерского изделия с данным id не существует");
             _databaseContext.Pastries.Remove(storedPastry);
             await _databaseContext.SaveChangesAsync();
             return pastryId;

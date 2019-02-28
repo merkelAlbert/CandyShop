@@ -1,18 +1,17 @@
-﻿using CandyShop.DAL.Models;
-using CandyShop.DTO;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using CandyShop.DAL.Models;
+using CandyShop.DTO.Pastries;
 
-namespace CandyShop.Services
+namespace CandyShop.Interfaces
 {
     public interface IPastriesService
     {
-        Task<Pastry> AddPastry(PastryInfo pastryInfo);
-        Task<Pastry> GetPastry(Guid pastryId);
-        Task<List<Pastry>> GetPastries();
-        Task<Pastry> UpdatePastry(Guid pastryId, PastryInfo pastryInfo);
+        Task<PastryModel> AddPastry(PastryInfo pastryInfo);
+        Task<PastryModel> GetPastry(Guid pastryId);
+        Task<List<PastryModel>> GetPastries();
+        Task<PastryModel> UpdatePastry(Guid pastryId, PastryInfo pastryInfo);
         Task<Guid> DeletePastry(Guid pastryId);
     }
 }

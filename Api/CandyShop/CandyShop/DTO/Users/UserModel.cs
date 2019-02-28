@@ -1,9 +1,8 @@
 using System;
-using System.Collections.Generic;
 
-namespace CandyShop.DAL.Models
+namespace CandyShop.DTO.Users
 {
-    public class User
+    public class UserModel
     {
         public Guid Id { get; set; }
         public string Name { get; set; }

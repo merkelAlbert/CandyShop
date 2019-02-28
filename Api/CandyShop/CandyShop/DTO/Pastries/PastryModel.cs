@@ -1,13 +1,11 @@
-﻿using CandyShop.DAL.Enums;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using CandyShop.DAL.Enums;
 
-namespace CandyShop.DTO
+namespace CandyShop.DTO.Pastries
 {
-    public class PastryInfo
+    public class PastryModel
     {
+        public Guid Id { get; set; }
         public string Name { get; set; }
         public PastryType PastryType { get; set; }
         public string Description { get; set; }

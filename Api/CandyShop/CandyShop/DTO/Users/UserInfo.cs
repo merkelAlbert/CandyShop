@@ -1,4 +1,4 @@
-namespace CandyShop.DTO
+namespace CandyShop.DTO.Users
 {
     public class UserInfo
     {

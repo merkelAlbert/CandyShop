@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CandyShop.DAL;
 using CandyShop.DAL.Models;
+using CandyShop.DTO.Pastries;
 using CandyShop.Interfaces;
 
 namespace CandyShop.Controllers
