@@ -168,7 +168,6 @@ namespace CandyShop.Services
             try
             {
                 UpdateOrderFromInfo(ref storedOrder, orderInfo);
-                storedOrder.Id = orderId;
                 await _databaseContext.SaveChangesAsync();
                 return MapOrderModelFromOrder(storedOrder);
             }
