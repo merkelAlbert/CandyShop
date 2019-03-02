@@ -1,0 +1,31 @@
+.orders-cart {
+  width: 90%;
+  height: 60vh;
+  margin: 0 auto;
+  &__containers {
+    display: flex;
+    justify-content: space-between;
+  }
+  &__container {
+    width: 600px;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    overflow-y: auto;
+  }
+  &__item {
+    width: 500px;
+    margin: 15px auto;
+    &:hover {
+      cursor: pointer;
+    }
+  }
+  &__item--selected {
+    background-color: #dcf7cc;
+  }
+  &__item--hidden {
+    display: none;
+  }
+  &__button {
+    margin-top: 30px;
+  }
+}

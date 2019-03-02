@@ -1,0 +1,13 @@
+.users-view {
+  &__users {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+  }
+  &__add-button {
+    margin: 0 auto 15px;
+  }
+  &__user {
+    width: 350px;
+    margin: 15px auto;
+  }
+}

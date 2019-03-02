@@ -33,6 +33,18 @@ namespace CandyShop
 
             services.AddDbContext<DatabaseContext>(options =>
                 options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
+                
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll",
+                    builder =>
+                    {
+                        builder
+                            .AllowAnyOrigin()
+                            .AllowAnyMethod()
+                            .AllowAnyHeader();
+                    });
+            });
 
             services.AddSwaggerGen(c =>
             {
@@ -79,7 +91,7 @@ namespace CandyShop
             {
                 app.UseHsts();
             }
-
+            app.UseCors("AllowAll");
             //app.UseHttpsRedirection();
             app.UseMvc();
         }

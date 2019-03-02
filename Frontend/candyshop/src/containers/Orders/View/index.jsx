@@ -1,0 +1,100 @@
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+
+import { ORDERS, getAll, del } from '../../../utils/api';
+
+import './style.scss';
+import EditIcon from '../../../components/Icons/Edit';
+import DeleteIcon from '../../../components/Icons/Delete';
+
+const OrdersView = () => {
+  const [orders, setOrders] = useState([]);
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+
+  const handleDeleteIconClick = async orderId => {
+    try {
+      await del(ORDERS, orderId);
+      setOrders(orders.filter(order => order.id !== orderId));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchOrders = async () => {
+    try {
+      const data = await getAll(ORDERS);
+      setOrders(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const normalizePastries = pastries => {
+    const pastriesMap = {};
+    pastries &&
+      pastries.forEach(pastry => {
+        if (!pastriesMap[pastry.id]) {
+          pastriesMap[pastry.id] = {
+            count: 1,
+            pastry
+          };
+        } else {
+          pastriesMap[pastry.id].count++;
+        }
+      });
+    return Object.keys(pastriesMap).map(key => pastriesMap[key]);
+  };
+
+  return (
+    <div className="orders-view">
+      <Link className="link" to="/orders/add">
+        <button className="button orders-view__add-button">
+          добавить заказ
+        </button>
+      </Link>
+      <div className="orders-view__orders">
+        {orders.map(order => {
+          const normalizedPastries = normalizePastries(order.pastries);
+          console.log(normalizedPastries);
+          return (
+            <div key={order.id} className="orders-view__order">
+              <img
+                className="orders-view__order-image"
+                src={`https://avatars.dicebear.com/v2/identicon/${
+                  order.id
+                }.svg`}
+                alt="заказик"
+              />
+              <div className="orders-view__order-info">
+                <div>{order.user.name}</div>
+                <div>
+                  {normalizedPastries.map(({ count, pastry }) => (
+                    <div key={pastry.id}>
+                      <p>
+                        <strong>{pastry.name}</strong> | {pastry.price} ₽ |{' '}
+                        {count} шт.
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="orders-view__actions">
+                <Link to={`/orders/${order.id}/edit`}>
+                  <EditIcon className="orders-view__icon" />
+                </Link>
+                <DeleteIcon
+                  className="orders-view__icon orders-view__delete-icon"
+                  onClick={() => handleDeleteIconClick(order.id)}
+                />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+export default OrdersView;

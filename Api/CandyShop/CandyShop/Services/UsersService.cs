@@ -40,6 +40,12 @@ namespace CandyShop.Services
             };
             return userModel;
         }
+        
+        private void UpdateUserFromInfo(ref User user, UserInfo userInfo)
+        {
+            user.Name = userInfo.Name;
+            user.Phone = userInfo.Phone;
+        }
 
         public async Task<UserModel> AddUser(UserInfo userInfo)
         {
@@ -76,8 +82,7 @@ namespace CandyShop.Services
         {
             var storedUser = await _databaseContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
             if (storedUser == null) throw new InvalidOperationException("Пользователя с данным id не существует");
-            storedUser = MapUserFromUserInfo(userInfo);
-            storedUser.Id = userId;
+            UpdateUserFromInfo(ref storedUser, userInfo);
             await _databaseContext.SaveChangesAsync();
             return MapUserModelFromUser(storedUser);
         }

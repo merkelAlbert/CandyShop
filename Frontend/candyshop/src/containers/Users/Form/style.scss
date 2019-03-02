@@ -1,0 +1,14 @@
+.users-form {
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+  margin: 0 auto;
+
+  &__field {
+    margin: 10px 0;
+  }
+  &__submit-button {
+    margin: 20px 0;
+    width: 100px;
+  }
+}

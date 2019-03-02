@@ -1,0 +1,13 @@
+.pastries-view {
+  &__pastries {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+  &__add-button {
+    margin: 0 auto 15px;
+  }
+  &__pastry {
+    width: 600px;
+    margin: 15px auto;
+  }
+}

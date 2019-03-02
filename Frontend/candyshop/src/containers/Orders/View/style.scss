@@ -1,0 +1,49 @@
+.orders-view {
+  &__orders {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+  &__add-button {
+    margin: 0 auto 15px;
+  }
+  &__order {
+    display: flex;
+    align-items: center;
+    margin: 15px auto;
+    width: 600px;
+    background: #f8f8f8;
+    border-radius: 4px;
+    padding: 10px;
+    &:hover {
+      box-shadow: 5px 5px rgb(179, 179, 179);
+    }
+  }
+  &__order-image {
+    width: 20%;
+  }
+  &__order-info {
+    display: flex;
+    width: 50%;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-left: 30px;
+    &>* {
+      margin: 2px 0;
+    }
+  }
+
+  &__actions{
+    margin-left: auto;
+    align-self: flex-start;
+  }
+  &__icon {
+    width: 25px;
+    height: 25px;
+    margin: 0 5px;
+  }
+  &__delete-icon {
+    &:hover{
+      cursor: pointer;
+    }
+  }
+}

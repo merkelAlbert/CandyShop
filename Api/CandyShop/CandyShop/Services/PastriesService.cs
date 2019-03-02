@@ -34,6 +34,15 @@ namespace CandyShop.Services
             return pastry;
         }
 
+        private void UpdatePastryFromInfo(ref Pastry pastry, PastryInfo pastryInfo)
+        {
+            pastry.Name = pastryInfo.Name;
+            pastry.PastryType = pastryInfo.PastryType;
+            pastry.Description = pastryInfo.Description;
+            pastry.Price = pastryInfo.Price;
+            pastry.Compound = pastryInfo.Compound;
+        }
+
         private PastryModel MapPastryModelFromPastry(Pastry pastry)
         {
             var pastryModel = new PastryModel()
@@ -84,8 +93,7 @@ namespace CandyShop.Services
             var storedPastry = await _databaseContext.Pastries.FirstOrDefaultAsync(p => p.Id == pastryId);
             if (storedPastry == null)
                 throw new InvalidOperationException("Кондитерского изделия с данным id не существует");
-            storedPastry = MapPastryFromInfo(pastryInfo);
-            storedPastry.Id = pastryId;
+            UpdatePastryFromInfo(ref storedPastry, pastryInfo);
             await _databaseContext.SaveChangesAsync();
             return MapPastryModelFromPastry(storedPastry);
         }

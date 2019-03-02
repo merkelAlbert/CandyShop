@@ -1,26 +1,25 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { Route, Switch, BrowserRouter } from 'react-router-dom';
+
+import Header from './components/Header';
+import Users from './containers/Users';
+import Pastries from './containers/Pastries';
+import Orders from './containers/Orders';
 
 class App extends Component {
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
+      <BrowserRouter>
+        <div className="App">
+          <Header />
+          <Switch>
+            {/* <Route exact path="/cart" component={}/> */}
+            <Route path="/users" component={Users} />
+            <Route path="/pastries" component={Pastries} />
+            <Route path="/orders" component={Orders} />
+          </Switch>
+        </div>
+      </BrowserRouter>
     );
   }
 }

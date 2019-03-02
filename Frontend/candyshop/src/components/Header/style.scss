@@ -1,0 +1,17 @@
+.header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 40px;
+  background-color: #f8f8f8;
+  padding: 0 40px;
+  margin-bottom: 40px;
+  &>* {
+    margin: 0 50px;
+  }
+}
+
+.link {
+  color: currentColor;
+  text-decoration: none;
+}

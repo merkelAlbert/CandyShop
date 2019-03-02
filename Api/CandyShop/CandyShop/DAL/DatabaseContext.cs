@@ -18,11 +18,16 @@ namespace CandyShop.DAL
         {
             base.OnModelCreating(builder);
 
+            builder.Entity<User>()
+                .HasMany(u => u.Orders)
+                .WithOne(o => o.User)
+                .OnDelete(DeleteBehavior.Cascade);
+
             builder.Entity<OrderPastry>()
                 .HasOne(op => op.Order)
                 .WithMany(o => o.Pastries)
                 .HasForeignKey(op => op.OrderId);
-            
+
             builder.Entity<OrderPastry>()
                 .HasOne(op => op.Pastry)
                 .WithMany(o => o.Orders)
