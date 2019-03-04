@@ -8,7 +8,7 @@ namespace ConsoleCandyShop.DAL
         public DatabaseContext CreateDbContext(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>();
-            optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Username=postgres;Password=postgres;Database=CandyShop;");
+            optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Username=postgres;Password=root;Database=ConsoleCandyShop;");
 
             return new DatabaseContext(optionsBuilder.Options);
         }

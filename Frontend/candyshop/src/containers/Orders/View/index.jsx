@@ -31,22 +31,6 @@ const OrdersView = () => {
     }
   };
 
-  const normalizePastries = pastries => {
-    const pastriesMap = {};
-    pastries &&
-      pastries.forEach(pastry => {
-        if (!pastriesMap[pastry.id]) {
-          pastriesMap[pastry.id] = {
-            count: 1,
-            pastry
-          };
-        } else {
-          pastriesMap[pastry.id].count++;
-        }
-      });
-    return Object.keys(pastriesMap).map(key => pastriesMap[key]);
-  };
-
   return (
     <div className="orders-view">
       <Link className="link" to="/orders/add">
@@ -56,8 +40,6 @@ const OrdersView = () => {
       </Link>
       <div className="orders-view__orders">
         {orders.map(order => {
-          const normalizedPastries = normalizePastries(order.pastries);
-          console.log(normalizedPastries);
           return (
             <div key={order.id} className="orders-view__order">
               <img
@@ -70,11 +52,11 @@ const OrdersView = () => {
               <div className="orders-view__order-info">
                 <div>{order.user.name}</div>
                 <div>
-                  {normalizedPastries.map(({ count, pastry }) => (
+                  {order.pastries.map(({ amount, pastry }) => (
                     <div key={pastry.id}>
                       <p>
                         <strong>{pastry.name}</strong> | {pastry.price} ₽ |{' '}
-                        {count} шт.
+                        {amount} шт.
                       </p>
                     </div>
                   ))}

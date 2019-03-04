@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using CandyShop.DTO.OrderPastry;
 using CandyShop.DTO.Pastries;
 using CandyShop.DTO.Users;
 
@@ -9,6 +10,6 @@ namespace CandyShop.DTO.Orders
     {
         public Guid Id { get; set; }
         public UserModel User { get; set; }
-        public List<PastryModel> Pastries { get; set; } = new List<PastryModel>();
+        public List<OrderPastryModel> Pastries { get; set; } = new List<OrderPastryModel>();
     }
 }

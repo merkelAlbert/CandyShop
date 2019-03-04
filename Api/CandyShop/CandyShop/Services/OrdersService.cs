@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CandyShop.DAL.Models.IntermediateModels;
+using CandyShop.DTO.OrderPastry;
 using CandyShop.DTO.Orders;
 using CandyShop.DTO.Pastries;
 using CandyShop.DTO.Users;
@@ -40,32 +41,9 @@ namespace CandyShop.Services
                     Phone = userModel.Phone
                 }
             };
-            foreach (var pastryId in orderInfo.PastriesIds)
+            foreach (var orderPastryInfo in orderInfo.PastriesInfos)
             {
-                var pastryModel = await _pastriesService.GetPastry(pastryId);
-                order.Pastries.Add(new OrderPastry()
-                {
-                    Pastry = new Pastry()
-                    {
-                        Id = pastryModel.Id,
-                        Name = pastryModel.Name,
-                        Price = pastryModel.Price,
-                        Compound = pastryModel.Compound,
-                        Description = pastryModel.Description,
-                        PastryType = pastryModel.PastryType
-                    }
-                });
-            }
-
-            return order;
-        }
-
-        private void UpdateOrderFromInfo(ref Order order, OrderInfo orderInfo)
-        {
-            order.Pastries = new List<OrderPastry>();
-            foreach (var pastryId in orderInfo.PastriesIds)
-            {
-                var pastryModel = _pastriesService.GetPastry(pastryId).Result;
+                var pastryModel = await _pastriesService.GetPastry(orderPastryInfo.PastryId);
                 order.Pastries.Add(new OrderPastry()
                 {
                     Pastry = new Pastry()
@@ -77,6 +55,31 @@ namespace CandyShop.Services
                         Description = pastryModel.Description,
                         PastryType = pastryModel.PastryType
                     },
+                    Amount = orderPastryInfo.Amount
+                });
+            }
+
+            return order;
+        }
+
+        private void UpdateOrderFromInfo(ref Order order, OrderInfo orderInfo)
+        {
+            order.Pastries = new List<OrderPastry>();
+            foreach (var orderPastryInfo in orderInfo.PastriesInfos)
+            {
+                var pastryModel = _pastriesService.GetPastry(orderPastryInfo.PastryId).Result;
+                order.Pastries.Add(new OrderPastry()
+                {
+                    Pastry = new Pastry()
+                    {
+                        Id = pastryModel.Id,
+                        Name = pastryModel.Name,
+                        Price = pastryModel.Price,
+                        Compound = pastryModel.Compound,
+                        Description = pastryModel.Description,
+                        PastryType = pastryModel.PastryType
+                    },
+                    Amount = orderPastryInfo.Amount
                 });
             }
         }
@@ -89,23 +92,23 @@ namespace CandyShop.Services
                 Name = order.User.Name,
                 Phone = order.User.Phone
             };
-            var pastriesModels = order.Pastries.Select(op => op.Pastry)
-                .Select(pastry => new PastryModel()
+            var orderPastriesModels = new List<OrderPastryModel>();
+            foreach (var orderPastry in order.Pastries)
+            {
+                var pastryModel = _pastriesService.GetPastry(orderPastry.PastryId).Result;
+                orderPastriesModels.Add(new OrderPastryModel()
                 {
-                    Id = pastry.Id,
-                    Name = pastry.Name,
-                    Price = pastry.Price,
-                    Compound = pastry.Compound,
-                    Description = pastry.Description,
-                    PastryType = pastry.PastryType
-                })
-                .ToList();
+                    Id = orderPastry.Id,
+                    Pastry = pastryModel,
+                    Amount = orderPastry.Amount
+                });
+            }
 
             var orderModel = new OrderModel()
             {
                 Id = order.Id,
                 User = userModel,
-                Pastries = pastriesModels
+                Pastries = orderPastriesModels
             };
             return orderModel;
         }

@@ -21,29 +21,34 @@ const OrdersCart = ({
     params: { orderId }
   }
 }) => {
-  const [users, setUsers] = useState([]);
-  const [pastries, setPastries] = useState([]);
-  const [amounts, setAmounts] = useState([]);
-  const [selectedUser, setSelectedUser] = useState({});
-  const [selectedPastries, setSelectedPastries] = useState([]);
+  const [state, setState] = useState({
+    users: [],
+    pastries: [],
+    amounts: [],
+    selectedUser: {},
+    selectedPastries: []
+  });
+
   useEffect(() => {
     fetchData();
   }, []);
 
   const fetchOrder = async () => {
     const order = await getOne(ORDERS, orderId);
-    setSelectedUser(order.user.id);
-    const pastriesIds = [];
-    for (const pastry of order.pastries) {
-      if (!pastriesIds.includes(pastry.id)) {
-        pastriesIds.push(pastry.id);
-      }
-    }
+    setState(prevState => ({ ...prevState, selectedUser: order.user.id }));
+    //setSelectedUser(order.user.id);
+    const pastriesIds = order.pastries.map(pastry => pastry.id);
+
     for (const pastryId of pastriesIds) {
-      const count = order.pastries.filter(p => p.id === pastryId).length;
-      handleAmountChange(count, pastryId);
+      const {
+        pastry: { id },
+        amount
+      } = order.pastries.find(p => p.id === pastryId);
+      handleAmountChange(amount, id);
     }
-    setSelectedPastries(pastriesIds);
+
+    //setSelectedPastries(pastriesIds);
+    setState(prevState => ({ ...prevState, selectedPastries: pastriesIds }));
   };
 
   const fetchData = async () => {
@@ -53,32 +58,40 @@ const OrdersCart = ({
       }
       const users = await getAll(USERS);
       const pastries = await getAll(PASTRIES);
-      setUsers(users);
-      setPastries(pastries);
+      //setUsers(users);
+      setState(prevState => ({ ...prevState, users, pastries }));
+      //setPastries(pastries);
     } catch (error) {
       console.log(error);
     }
   };
 
   const handleAmountChange = (value, pastryId) => {
-    const amount = amounts.find(amount => amount.pastryId === pastryId);
+    const amount = state.amounts.find(amount => amount.pastryId === pastryId);
     if (amount != null) {
       if (value === 0) {
-        setAmounts(prevAmounts =>
-          prevAmounts.filter(amount => amount.pastryId !== pastryId)
-        );
+        setState(prevState => ({
+          ...prevState,
+          amounts: prevState.amounts.filter(
+            amount => amount.pastryId !== pastryId
+          )
+        }));
       } else {
-        setAmounts(prevAmounts =>
-          prevAmounts.map(amount => {
+        setState(prevState => ({
+          ...prevState,
+          amounts: prevState.amounts.map(amount => {
             if (amount.pastryId === pastryId) {
               amount.value = value;
             }
             return amount;
           })
-        );
+        }));
       }
     } else {
-      setAmounts(prevAmounts => [...prevAmounts, { pastryId, value }]);
+      setState(prevState => ({
+        ...prevState,
+        amounts: [...prevState.amounts, { pastryId, value }]
+      }));
     }
   };
 
@@ -88,39 +101,51 @@ const OrdersCart = ({
   };
 
   const handleUserClick = userId => {
-    const user = users.find(user => user.id === userId);
-    if (user && selectedUser !== user.id) setSelectedUser(user.id);
-    else setSelectedUser({});
+    if (!orderId) {
+      const user = state.users.find(user => user.id === userId);
+      if (user && state.selectedUser !== user.id)
+        setState(prevState => ({ ...prevState, selectedUser: user.id }));
+      else setState(prevState => ({ ...prevState, selectedUser: {} }));
+    }
   };
 
   const handlePastryClick = pastryId => {
-    const pastry = pastries.find(pastry => pastry.id === pastryId);
-    if (pastry && !selectedPastries.includes(pastry.id)) {
-      setSelectedPastries(prevPastries => [...prevPastries, pastry.id]);
+    const pastry = state.pastries.find(pastry => pastry.id === pastryId);
+    if (pastry && !state.selectedPastries.includes(pastry.id)) {
+      setState(prevState => ({
+        ...prevState,
+        selectedPastries: [...prevState.selectedPastries, pastry.id]
+      }));
       handleAmountChange(1, pastryId);
     } else {
-      setSelectedPastries(prevPastries =>
-        prevPastries.filter(id => id !== pastryId)
-      );
+      setState(prevState => ({
+        ...prevState,
+        selectedPastries: prevState.selectedPastries.filter(
+          id => id !== pastryId
+        )
+      }));
       handleAmountChange(0, pastryId);
     }
   };
 
   const handleSubmitButtonClick = async () => {
-    const pastriesIds = [];
-    for (const amount of amounts) {
+    const pastriesInfos = [];
+    for (const amount of state.amounts) {
       if (amount.value && amount.value > 0) {
-        const pastryId = selectedPastries.find(
+        const pastryId = state.selectedPastries.find(
           pastry => pastry === amount.pastryId
         );
-        for (let i = 0; i < amount.value; i++) {
-          pastriesIds.push(pastryId);
-        }
+        pastriesInfos.push({ pastryId, amount: amount.value });
       }
     }
     try {
-      if (!orderId) await post(ORDERS, { userId: selectedUser, pastriesIds });
-      else await put(ORDERS, orderId, { userId: selectedUser, pastriesIds });
+      if (!orderId)
+        await post(ORDERS, { userId: state.selectedUser, pastriesInfos });
+      else
+        await put(ORDERS, orderId, {
+          userId: state.selectedUser,
+          pastriesInfos
+        });
       history.push('/orders');
     } catch (error) {
       console.log(error);
@@ -131,12 +156,12 @@ const OrdersCart = ({
     <div className="orders-cart">
       <div className="orders-cart__containers">
         <div className="orders-cart__container">
-          {users.map(user => (
+          {state.users.map(user => (
             <User
               key={user.id}
               user={user}
               className={
-                user.id !== selectedUser
+                user.id !== state.selectedUser
                   ? 'orders-cart__item'
                   : 'orders-cart__item orders-cart__item--selected'
               }
@@ -146,12 +171,12 @@ const OrdersCart = ({
           ))}
         </div>
         <div className="orders-cart__container">
-          {pastries.map(pastry => (
+          {state.pastries.map(pastry => (
             <div key={pastry.id}>
               <Pastry
                 pastry={pastry}
                 className={
-                  !selectedPastries.includes(pastry.id)
+                  !state.selectedPastries.includes(pastry.id)
                     ? 'orders-cart__item'
                     : 'orders-cart__item orders-cart__item--selected'
                 }
@@ -162,11 +187,12 @@ const OrdersCart = ({
                 type="number"
                 placeholder="Количество"
                 defaultValue={
-                  amounts.find(amount => amount.pastryId === pastry.id) &&
-                  amounts.find(amount => amount.pastryId === pastry.id).value
+                  state.amounts.find(amount => amount.pastryId === pastry.id) &&
+                  state.amounts.find(amount => amount.pastryId === pastry.id)
+                    .value
                 }
                 className={
-                  selectedPastries.includes(pastry.id)
+                  state.selectedPastries.includes(pastry.id)
                     ? 'text orders-cart__item'
                     : 'text orders-cart__item orders-cart__item--hidden'
                 }
@@ -180,14 +206,14 @@ const OrdersCart = ({
         type="button"
         value={orderId ? 'Изменить' : 'Добавить'}
         className={
-          Object.keys(selectedUser).length === 0 ||
-          selectedPastries.length === 0
+          Object.keys(state.selectedUser).length === 0 ||
+          state.selectedPastries.length === 0
             ? 'button button--disabled orders-cart__button'
             : 'button orders-cart__button'
         }
         disabled={
-          Object.keys(selectedUser).length === 0 ||
-          selectedPastries.length === 0
+          Object.keys(state.selectedUser).length === 0 ||
+          state.selectedPastries.length === 0
         }
         onClick={handleSubmitButtonClick}
       />
