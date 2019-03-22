@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CandyShop.DAL;
+using CandyShop.DAL.Enums;
 using CandyShop.DAL.Models;
 using CandyShop.DTO;
 using CandyShop.DTO.Pastries;
 using CandyShop.DTO.Users;
+using CandyShop.Filters;
 using CandyShop.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -65,11 +67,47 @@ namespace CandyShop.Services
             return MapPastryModelFromPastry(pastry);
         }
 
-        public async Task<List<PastryModel>> GetPastries()
+        public async Task<List<PastryModel>> GetPastries(QueryFilter filter)
         {
             var pastries = await _databaseContext.Pastries.ToListAsync();
+
+            var prop = typeof(Pastry).GetProperty(filter.PropertyName ?? "");
+            var filteredPastries = pastries;
+            if (prop != null)
+            {
+                switch (filter.SortingType)
+                {
+                    case SortingType.Asc:
+                    {
+                        filteredPastries = pastries.OrderBy(pastry => prop.GetValue(pastry, null))
+                            .Take(filter.Count ?? pastries.Count)
+                            .ToList();
+                        break;
+                    }
+                    case SortingType.Desc:
+                    {
+                        filteredPastries = pastries.OrderByDescending(pastry => prop.GetValue(pastry, null))
+                            .Take(filter.Count ?? pastries.Count)
+                            .ToList();
+                        break;
+                    }
+                    case SortingType.Equals:
+                    {
+                        filteredPastries = pastries.Where(pastry =>
+                                prop.GetValue(pastry, null).ToString().ToLower() == filter.ValueToEqual.ToLower())
+                            .Take(filter.Count ?? pastries.Count)
+                            .ToList();
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                filteredPastries = pastries.Take(filter.Count ?? pastries.Count).ToList();
+            }
+
             var pastryModels = new List<PastryModel>();
-            foreach (var pastry in pastries)
+            foreach (var pastry in filteredPastries)
             {
                 pastryModels.Add(MapPastryModelFromPastry(pastry));
             }

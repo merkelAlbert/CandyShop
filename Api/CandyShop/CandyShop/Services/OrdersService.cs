@@ -7,11 +7,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CandyShop.DAL.Enums;
 using CandyShop.DAL.Models.IntermediateModels;
 using CandyShop.DTO.OrderPastry;
 using CandyShop.DTO.Orders;
 using CandyShop.DTO.Pastries;
 using CandyShop.DTO.Users;
+using CandyShop.Filters;
 
 namespace CandyShop.Services
 {
@@ -27,6 +29,149 @@ namespace CandyShop.Services
             _databaseContext = databaseContext;
             _usersService = usersService;
             _pastriesService = pastriesService;
+        }
+
+        private List<Order> ApplyFilter(List<Order> orders, QueryFilter filter)
+        {
+            var filteredOrders = orders;
+            if (filter.PropertyName == "Price")
+            {
+                switch (filter.SortingType)
+                {
+                    case SortingType.Asc:
+                    {
+                        filteredOrders = orders.OrderBy(order =>
+                                MapOrderModelFromOrder(order).Pastries
+                                    .Sum(pastry => pastry.Amount * pastry.Pastry.Price))
+                            .Take(filter.Count ?? orders.Count)
+                            .ToList();
+                        break;
+                    }
+                    case SortingType.Desc:
+                    {
+                        filteredOrders = orders.OrderByDescending(order =>
+                                MapOrderModelFromOrder(order).Pastries
+                                    .Sum(pastry => pastry.Amount * pastry.Pastry.Price))
+                            .Take(filter.Count ?? orders.Count)
+                            .ToList();
+                        break;
+                    }
+                    case SortingType.Equals:
+                    {
+                        filteredOrders = orders.Where(order =>
+                                MapOrderModelFromOrder(order).Pastries
+                                    .Sum(pastry => pastry.Amount * pastry.Pastry.Price)
+                                    .ToString() == filter.ValueToEqual)
+                            .Take(filter.Count ?? orders.Count)
+                            .ToList();
+                        break;
+                    }
+                }
+            }
+            else if (filter.PropertyName == "PastryName")
+            {
+                switch (filter.SortingType)
+                {
+                    case SortingType.Asc:
+                    {
+                        filteredOrders = orders.OrderBy(order =>
+                                MapOrderModelFromOrder(order).Pastries.Select(pastry => pastry.Pastry.Name)
+                                    .FirstOrDefault())
+                            .Take(filter.Count ?? orders.Count)
+                            .ToList();
+                        break;
+                    }
+                    case SortingType.Desc:
+                    {
+                        filteredOrders = orders.OrderByDescending(order =>
+                                MapOrderModelFromOrder(order).Pastries
+                                    .Select(pastry => pastry.Pastry.Name).FirstOrDefault())
+                            .Take(filter.Count ?? orders.Count)
+                            .ToList();
+                        break;
+                    }
+                    case SortingType.Equals:
+                    {
+                        filteredOrders = orders.Where(order =>
+                                MapOrderModelFromOrder(order).Pastries
+                                    .Select(pastry => pastry.Pastry.Name).Any(pastry =>
+                                        pastry.ToString().ToLower() == filter.ValueToEqual.ToLower()))
+                            .Take(filter.Count ?? orders.Count)
+                            .ToList();
+                        break;
+                    }
+                }
+            }
+            else if (filter.PropertyName == "Amount")
+            {
+                switch (filter.SortingType)
+                {
+                    case SortingType.Asc:
+                    {
+                        filteredOrders = orders.OrderBy(order =>
+                                MapOrderModelFromOrder(order).Pastries.Select(pastry => pastry.Amount).Single())
+                            .Take(filter.Count ?? orders.Count)
+                            .ToList();
+                        break;
+                    }
+                    case SortingType.Desc:
+                    {
+                        filteredOrders = orders.OrderByDescending(order =>
+                                MapOrderModelFromOrder(order).Pastries
+                                    .Select(pastry => pastry.Amount).Single())
+                            .Take(filter.Count ?? orders.Count)
+                            .ToList();
+                        break;
+                    }
+                    case SortingType.Equals:
+                    {
+                        filteredOrders = orders.Where(order =>
+                                MapOrderModelFromOrder(order).Pastries
+                                    .Select(pastry => pastry.Amount).Single().ToString() == filter.ValueToEqual)
+                            .Take(filter.Count ?? orders.Count)
+                            .ToList();
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                var prop = typeof(Order).GetProperty(filter.PropertyName ?? "");
+                if (prop != null)
+                {
+                    switch (filter.SortingType)
+                    {
+                        case SortingType.Asc:
+                        {
+                            filteredOrders = orders.OrderBy(order => prop.GetValue(order, null))
+                                .Take(filter.Count ?? orders.Count)
+                                .ToList();
+                            break;
+                        }
+                        case SortingType.Desc:
+                        {
+                            filteredOrders = orders.OrderByDescending(order => prop.GetValue(order, null))
+                                .Take(filter.Count ?? orders.Count)
+                                .ToList();
+                            break;
+                        }
+                        case SortingType.Equals:
+                        {
+                            filteredOrders = orders.Where(order =>
+                                    prop.GetValue(order, null).ToString().ToLower() == filter.ValueToEqual.ToLower())
+                                .Take(filter.Count ?? orders.Count)
+                                .ToList();
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    filteredOrders = orders.Take(filter.Count ?? orders.Count).ToList();
+                }
+            }
+
+            return filteredOrders;
         }
 
         private async Task<Order> MapOrderFromInfo(OrderInfo orderInfo)
@@ -108,7 +253,8 @@ namespace CandyShop.Services
             {
                 Id = order.Id,
                 User = userModel,
-                Pastries = orderPastriesModels
+                Pastries = orderPastriesModels,
+                CreationDate = order.CreationDate,
             };
             return orderModel;
         }
@@ -118,6 +264,7 @@ namespace CandyShop.Services
             try
             {
                 var order = await MapOrderFromInfo(orderInfo);
+                order.CreationDate = DateTime.Now;
                 _databaseContext.Orders.Add(order);
                 await _databaseContext.SaveChangesAsync();
                 return MapOrderModelFromOrder(order);
@@ -128,7 +275,7 @@ namespace CandyShop.Services
             }
         }
 
-        public async Task<List<OrderModel>> GetOrders()
+        public async Task<List<OrderModel>> GetOrders(QueryFilter filter)
         {
             var orders = await _databaseContext.Orders
                 .Include(o => o.User)
@@ -136,8 +283,9 @@ namespace CandyShop.Services
                 .ThenInclude(p => p.Pastry)
                 .ToListAsync();
 
+            var filteredOrders = ApplyFilter(orders, filter);
             var orderModels = new List<OrderModel>();
-            foreach (var order in orders)
+            foreach (var order in filteredOrders)
             {
                 orderModels.Add(MapOrderModelFromOrder(order));
             }

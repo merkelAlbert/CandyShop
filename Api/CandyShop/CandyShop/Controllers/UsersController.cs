@@ -6,6 +6,7 @@ using CandyShop.DAL;
 using CandyShop.DAL.Models;
 using CandyShop.DTO;
 using CandyShop.DTO.Users;
+using CandyShop.Filters;
 using CandyShop.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -36,9 +37,9 @@ namespace CandyShop.Controllers
         }
 
         [HttpGet]
-        public async Task<object> GetUsers()
+        public async Task<object> GetUsers([FromQuery] QueryFilter filter)
         {
-            return await _usersService.GetUsers();
+            return await _usersService.GetUsers(filter);
         }
 
         [HttpGet]

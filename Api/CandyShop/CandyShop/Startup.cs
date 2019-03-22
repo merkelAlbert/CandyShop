@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CandyShop.DAL;
+using CandyShop.Filters;
 using CandyShop.Interfaces;
 using CandyShop.Services;
 using Microsoft.AspNetCore.Builder;
@@ -72,6 +73,7 @@ namespace CandyShop
             services.AddScoped<IUsersService, UsersService>();
             services.AddScoped<IPastriesService, PastriesService>();
             services.AddScoped<IOrdersService, OrdersService>();
+            services.AddSingleton<QueryFilter>();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

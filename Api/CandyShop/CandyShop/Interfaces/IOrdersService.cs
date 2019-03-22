@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CandyShop.DTO.Orders;
+using CandyShop.Filters;
 
 namespace CandyShop.Interfaces
 {
@@ -12,7 +13,7 @@ namespace CandyShop.Interfaces
     {
         Task<OrderModel> AddOrder(OrderInfo orderInfo);
         Task<OrderModel> GetOrder(Guid orderId);
-        Task<List<OrderModel>> GetOrders();
+        Task<List<OrderModel>> GetOrders(QueryFilter filter);
         Task<OrderModel> UpdateOrder(Guid orderId, OrderInfo orderInfo);
         Task<Guid> DeleteOrder(Guid orderId);
     }

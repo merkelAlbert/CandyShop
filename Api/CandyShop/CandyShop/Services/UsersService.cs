@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CandyShop.DAL;
+using CandyShop.DAL.Enums;
 using CandyShop.DAL.Models;
 using CandyShop.DTO;
 using CandyShop.DTO.Users;
+using CandyShop.Filters;
 using CandyShop.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -40,7 +42,7 @@ namespace CandyShop.Services
             };
             return userModel;
         }
-        
+
         private void UpdateUserFromInfo(ref User user, UserInfo userInfo)
         {
             user.Name = userInfo.Name;
@@ -55,11 +57,47 @@ namespace CandyShop.Services
             return MapUserModelFromUser(user);
         }
 
-        public async Task<List<UserModel>> GetUsers()
+        public async Task<List<UserModel>> GetUsers(QueryFilter filter)
         {
             var users = await _databaseContext.Users.ToListAsync();
+
+            var prop = typeof(User).GetProperty(filter.PropertyName ?? "");
+            var filteredUsers = users;
+            if (prop != null)
+            {
+                switch (filter.SortingType)
+                {
+                    case SortingType.Asc:
+                    {
+                        filteredUsers = users.OrderBy(user => prop.GetValue(user, null))
+                            .Take(filter.Count ?? users.Count)
+                            .ToList();
+                        break;
+                    }
+                    case SortingType.Desc:
+                    {
+                        filteredUsers = users.OrderByDescending(user => prop.GetValue(user, null))
+                            .Take(filter.Count ?? users.Count)
+                            .ToList();
+                        break;
+                    }
+                    case SortingType.Equals:
+                    {
+                        filteredUsers = users.Where(user =>
+                                prop.GetValue(user, null).ToString().ToLower() == filter.ValueToEqual.ToLower())
+                            .Take(filter.Count ?? users.Count)
+                            .ToList();
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                filteredUsers = users.Take(filter.Count ?? users.Count).ToList();
+            }
+
             var userModels = new List<UserModel>();
-            foreach (var user in users)
+            foreach (var user in filteredUsers)
             {
                 userModels.Add(MapUserModelFromUser(user));
             }

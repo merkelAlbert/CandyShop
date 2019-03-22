@@ -1,0 +1,21 @@
+.statistics-view {
+  margin: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  &__form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  &__form-row {
+    display: flex;
+  }
+  &__form-field {
+    margin: 20px;
+  }
+  &__form-submit-button {
+    margin: 20px 0;
+    width: 100px;
+  }
+}

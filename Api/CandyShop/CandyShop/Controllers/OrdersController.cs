@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CandyShop.DTO.Orders;
+using CandyShop.Filters;
 
 namespace CandyShop.Controllers
 {
@@ -34,9 +35,9 @@ namespace CandyShop.Controllers
         }
 
         [HttpGet]
-        public async Task<object> GetOrders()
+        public async Task<object> GetOrders([FromQuery] QueryFilter filter)
         {
-            return await _ordersService.GetOrders();
+            return await _ordersService.GetOrders(filter);
         }
 
         [HttpGet]
@@ -81,6 +82,5 @@ namespace CandyShop.Controllers
                 return BadRequest(e.Message);
             }
         }
-
     }
 }

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using CandyShop.DAL;
 using CandyShop.DAL.Models;
 using CandyShop.DTO.Pastries;
+using CandyShop.Filters;
 using CandyShop.Interfaces;
 
 namespace CandyShop.Controllers
@@ -37,9 +38,9 @@ namespace CandyShop.Controllers
         }
 
         [HttpGet]
-        public async Task<object> GetPastries()
+        public async Task<object> GetPastries([FromQuery] QueryFilter filter)
         {
-            return await _pastriesService.GetPastries();
+            return await _pastriesService.GetPastries(filter);
         }
 
         [HttpGet]

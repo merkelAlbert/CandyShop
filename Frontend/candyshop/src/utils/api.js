@@ -5,8 +5,11 @@ export const USERS = BASE_URL + '/users';
 export const PASTRIES = BASE_URL + '/pastries';
 export const ORDERS = BASE_URL + '/orders';
 
-export const getAll = async url => {
-  const { data } = await axios.get(url);
+export const getAll = async (url, params) => {
+  const options = {
+    params
+  };
+  const { data } = await axios.get(url, options);
   return data;
 };
 export const getOne = async (url, id) => {

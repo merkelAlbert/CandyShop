@@ -5,6 +5,7 @@ import Header from './components/Header';
 import Users from './containers/Users';
 import Pastries from './containers/Pastries';
 import Orders from './containers/Orders';
+import Statistics from './containers/Statistics';
 
 class App extends Component {
   render() {
@@ -13,10 +14,10 @@ class App extends Component {
         <div className="App">
           <Header />
           <Switch>
-            {/* <Route exact path="/cart" component={}/> */}
             <Route path="/users" component={Users} />
             <Route path="/pastries" component={Pastries} />
             <Route path="/orders" component={Orders} />
+            <Route path="/statistics" component={Statistics} />
           </Switch>
         </div>
       </BrowserRouter>

@@ -11,5 +11,6 @@ namespace CandyShop.DTO.Orders
         public Guid Id { get; set; }
         public UserModel User { get; set; }
         public List<OrderPastryModel> Pastries { get; set; } = new List<OrderPastryModel>();
+        public DateTime CreationDate { get; set; }
     }
 }

@@ -61,6 +61,9 @@ const OrdersView = () => {
                     </div>
                   ))}
                 </div>
+                <div>
+                  {new Date(order.creationDate).toLocaleDateString('ru')}
+                </div>
               </div>
               <div className="orders-view__actions">
                 <Link to={`/orders/${order.id}/edit`}>
