@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using CandyShop.DAL;
 using CandyShop.DAL.Enums;
 using CandyShop.DAL.Models;
+using CandyShop.DAL.Models.IntermediateModels;
 using CandyShop.DTO;
 using CandyShop.DTO.Pastries;
 using CandyShop.DTO.Users;
@@ -21,6 +22,150 @@ namespace CandyShop.Services
         public PastriesService(DatabaseContext databaseContext)
         {
             _databaseContext = databaseContext;
+        }
+
+        private int GetRequestByPeriod(List<Pastry> pastries, Guid pastryId, DateTime startDate, DateTime endDate)
+        {
+            var orders = pastries.SelectMany(pastry => pastry.Orders);
+            if (startDate != default(DateTime) && endDate != default(DateTime))
+                orders = orders.Where(orderPastry =>
+                        orderPastry.Order.CreationDate.Date >= startDate.Date &&
+                        orderPastry.Order.CreationDate.Date <= endDate.Date)
+                    .ToList();
+
+            var groupedOrders = orders.GroupBy(o => o.PastryId).ToList();
+            var resultOrders = new List<OrderPastry>();
+            foreach (var groupedOrder in groupedOrders)
+            {
+                var orderPastry = orders.First(o => o.PastryId == groupedOrder.Key);
+                var copy = new OrderPastry()
+                {
+                    Id = orderPastry.Id,
+                    Order = orderPastry.Order,
+                    Amount = 0,
+                    Pastry = orderPastry.Pastry,
+                    OrderId = orderPastry.OrderId,
+                    PastryId = orderPastry.PastryId
+                };
+
+                foreach (var groupedOrderPastry in groupedOrder)
+                {
+                    copy.Amount += groupedOrderPastry.Amount;
+                }
+
+                resultOrders.Add(copy);
+            }
+
+            var amount = resultOrders.First(order => order.PastryId == pastryId).Amount;
+            return amount;
+        }
+
+        private List<Pastry> ApplyFilter(List<Pastry> pastries, QueryFilter filter)
+        {
+            var orders = pastries.SelectMany(pastry => pastry.Orders);
+            if (filter.StartDate != default(DateTime) && filter.EndDate != default(DateTime))
+                orders = orders.Where(orderPastry =>
+                        orderPastry.Order.CreationDate.Date >= filter.StartDate.Date &&
+                        orderPastry.Order.CreationDate.Date <= filter.EndDate.Date)
+                    .ToList();
+
+            var groupedOrders = orders.GroupBy(o => o.PastryId).ToList();
+            var resultOrders = new List<OrderPastry>();
+            foreach (var groupedOrder in groupedOrders)
+            {
+                var orderPastry = orders.First(o => o.PastryId == groupedOrder.Key);
+                resultOrders.Add(orderPastry);
+            }
+
+            var filteredPastries = resultOrders.Select(o => o.Pastry).ToList();
+            if (filter.PropertyName == "Request")
+            {
+                switch (filter.SortingType)
+                {
+                    case SortingType.Asc:
+                    {
+                        if (filter.StartDate != default(DateTime) && filter.EndDate != default(DateTime))
+                            filteredPastries = filteredPastries
+                                .OrderBy(pastry => pastry.Orders.Where(orderPastry =>
+                                        orderPastry.Order.CreationDate.Date >= filter.StartDate.Date &&
+                                        orderPastry.Order.CreationDate.Date <= filter.EndDate.Date)
+                                    .Sum(orderPastry => orderPastry.Amount))
+                                .Take(filter.Count ?? filteredPastries.Count)
+                                .ToList();
+                        else
+                            filteredPastries = filteredPastries
+                                .OrderBy(pastry => pastry.Orders
+                                    .Sum(orderPastry => orderPastry.Amount))
+                                .Take(filter.Count ?? filteredPastries.Count)
+                                .ToList();
+                        break;
+                    }
+                    case SortingType.Desc:
+                    {
+                        if (filter.StartDate != default(DateTime) && filter.EndDate != default(DateTime))
+                            filteredPastries = filteredPastries
+                                .OrderByDescending(pastry => pastry.Orders.Where(orderPastry =>
+                                        orderPastry.Order.CreationDate.Date >= filter.StartDate.Date &&
+                                        orderPastry.Order.CreationDate.Date <= filter.EndDate.Date)
+                                    .Sum(orderPastry => orderPastry.Amount))
+                                .Take(filter.Count ?? filteredPastries.Count)
+                                .ToList();
+                        else
+                            filteredPastries = filteredPastries
+                                .OrderByDescending(pastry => pastry.Orders
+                                    .Sum(orderPastry => orderPastry.Amount))
+                                .Take(filter.Count ?? filteredPastries.Count)
+                                .ToList();
+                        break;
+                    }
+                    case SortingType.Equals:
+                    {
+                        filteredPastries = filteredPastries.Where(pastry =>
+                                pastry.Orders.Sum(orderPastry => orderPastry.Amount).ToString() == filter.ValueToEqual)
+                            .Take(filter.Count ?? filteredPastries.Count)
+                            .ToList();
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                var prop = typeof(Pastry).GetProperty(filter.PropertyName ?? "");
+                if (prop != null)
+                {
+                    switch (filter.SortingType)
+                    {
+                        case SortingType.Asc:
+                        {
+                            filteredPastries = pastries.OrderBy(pastry => prop.GetValue(pastry, null))
+                                .Take(filter.Count ?? filteredPastries.Count)
+                                .ToList();
+                            break;
+                        }
+                        case SortingType.Desc:
+                        {
+                            filteredPastries = pastries.OrderByDescending(pastry => prop.GetValue(pastry, null))
+                                .Take(filter.Count ?? filteredPastries.Count)
+                                .ToList();
+                            break;
+                        }
+                        case SortingType.Equals:
+                        {
+                            filteredPastries = pastries.Where(pastry =>
+                                    prop.GetValue(pastry, null).ToString().ToLower() == filter.ValueToEqual.ToLower())
+                                .Take(filter.Count ?? filteredPastries.Count)
+                                .ToList();
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    filteredPastries = pastries.Take(filter.Count ?? filteredPastries.Count).ToList();
+                }
+            }
+
+            return filteredPastries;
         }
 
         private Pastry MapPastryFromInfo(PastryInfo pastryInfo)
@@ -54,7 +199,7 @@ namespace CandyShop.Services
                 PastryType = pastry.PastryType,
                 Description = pastry.Description,
                 Price = pastry.Price,
-                Compound = pastry.Compound
+                Compound = pastry.Compound,
             };
             return pastryModel;
         }
@@ -69,47 +214,16 @@ namespace CandyShop.Services
 
         public async Task<List<PastryModel>> GetPastries(QueryFilter filter)
         {
-            var pastries = await _databaseContext.Pastries.ToListAsync();
-
-            var prop = typeof(Pastry).GetProperty(filter.PropertyName ?? "");
-            var filteredPastries = pastries;
-            if (prop != null)
-            {
-                switch (filter.SortingType)
-                {
-                    case SortingType.Asc:
-                    {
-                        filteredPastries = pastries.OrderBy(pastry => prop.GetValue(pastry, null))
-                            .Take(filter.Count ?? pastries.Count)
-                            .ToList();
-                        break;
-                    }
-                    case SortingType.Desc:
-                    {
-                        filteredPastries = pastries.OrderByDescending(pastry => prop.GetValue(pastry, null))
-                            .Take(filter.Count ?? pastries.Count)
-                            .ToList();
-                        break;
-                    }
-                    case SortingType.Equals:
-                    {
-                        filteredPastries = pastries.Where(pastry =>
-                                prop.GetValue(pastry, null).ToString().ToLower() == filter.ValueToEqual.ToLower())
-                            .Take(filter.Count ?? pastries.Count)
-                            .ToList();
-                        break;
-                    }
-                }
-            }
-            else
-            {
-                filteredPastries = pastries.Take(filter.Count ?? pastries.Count).ToList();
-            }
-
+            var pastries = await _databaseContext.Pastries
+                .Include(pastry => pastry.Orders)
+                .ThenInclude(orderPastry => orderPastry.Order).ToListAsync();
+            var filteredPastries = ApplyFilter(pastries, filter);
             var pastryModels = new List<PastryModel>();
             foreach (var pastry in filteredPastries)
             {
-                pastryModels.Add(MapPastryModelFromPastry(pastry));
+                var pastryModel = MapPastryModelFromPastry(pastry);
+                pastryModel.Request = GetRequestByPeriod(filteredPastries, pastry.Id, filter.StartDate, filter.EndDate);
+                pastryModels.Add(pastryModel);
             }
 
             return pastryModels;

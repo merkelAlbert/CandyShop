@@ -20,6 +20,10 @@ const ENTITIES = [
     title: 'Изделия',
     fields: [
       {
+        value: 'Request',
+        title: 'Спрос'
+      },
+      {
         value: 'Name',
         title: 'Название'
       },
@@ -34,20 +38,8 @@ const ENTITIES = [
     title: 'Заказы',
     fields: [
       {
-        value: 'Price',
+        value: 'Sum',
         title: 'Сумма'
-      },
-      {
-        value: 'Amount',
-        title: 'Число изделий'
-      },
-      {
-        value: 'CreationDate',
-        title: 'Дата создания'
-      },
-      {
-        value: 'PastryName',
-        title: 'Изделие'
       }
     ]
   }
@@ -61,10 +53,6 @@ const SORTING_TYPES = [
   {
     value: 'Desc',
     title: 'По убыванию'
-  },
-  {
-    value: 'Equals',
-    title: 'Равно'
   }
 ];
 
@@ -72,26 +60,42 @@ const StatisticsView = () => {
   const [entity, setEntity] = useState();
   const [propertyName, setPropertyName] = useState();
   const [sortingType, setSortingType] = useState();
-  const [valueToEqual, setValueToEqual] = useState();
+  const [startDate, setStartDate] = useState();
+  const [endDate, setEndDate] = useState();
   const [count, setCount] = useState();
   const [result, setResult] = useState([]);
-  const handleChange = e => {
+  const [users, setUsers] = useState([]);
+  const [user, setUser] = useState([]);
+  const handleChange = async e => {
     setResult([]);
-    switch (e.target.name) {
+    const {
+      target: { name, value }
+    } = e;
+    console.log(name, value);
+    switch (name) {
       case 'entity':
-        setEntity(e.target.value);
+        if (value === 'User') {
+          setUsers(await getAll(USERS));
+        }
+        setEntity(value);
         break;
       case 'propertyName':
-        setPropertyName(e.target.value);
+        setPropertyName(value);
         break;
       case 'sortingType':
-        setSortingType(e.target.value);
+        setSortingType(value);
         break;
-      case 'valueToEqual':
-        setValueToEqual(e.target.value);
+      case 'startDate':
+        setStartDate(value);
+        break;
+      case 'endDate':
+        setEndDate(value);
         break;
       case 'count':
-        setCount(e.target.value);
+        setCount(value);
+        break;
+      case 'user':
+        setUser(value);
         break;
       default: {
       }
@@ -104,13 +108,14 @@ const StatisticsView = () => {
     const payload = {
       propertyName,
       sortingType,
-      valueToEqual,
+      startDate,
+      endDate,
       count
     };
     try {
       switch (entity) {
         case 'User': {
-          setResult(await getAll(USERS, payload));
+          setResult(await getAll(`${USERS}/${user}/orders`, payload));
           break;
         }
         case 'Pastry': {
@@ -129,7 +134,6 @@ const StatisticsView = () => {
     }
   };
 
-  console.log(result);
   return (
     <div className="statistics-view">
       <form className="statistics-view__form" onSubmit={handleSubmit}>
@@ -151,46 +155,75 @@ const StatisticsView = () => {
           </select>
           {entity && (
             <>
-              <select
-                className="text statistics-view__form-field"
-                value={propertyName}
-                name="propertyName"
-                onChange={handleChange}
-              >
-                <option selected disabled>
-                  Поле
-                </option>
-                {ENTITIES.find(el => el.value === entity).fields.map(field => (
-                  <option value={field.value}>{field.title}</option>
-                ))}
-              </select>
-              <select
-                className="text statistics-view__form-field"
-                value={sortingType}
-                name="sortingType"
-                onChange={handleChange}
-              >
-                <option selected disabled>
-                  Тип сортировки
-                </option>
-                {SORTING_TYPES.map(field => (
-                  <option value={field.value}>{field.title}</option>
-                ))}
-              </select>
+              {entity === 'User' && users.length > 0 && (
+                <select
+                  className="text statistics-view__form-field"
+                  value={user}
+                  name="user"
+                  onChange={handleChange}
+                >
+                  <option selected>Пользователь</option>
+                  {users.map(user => (
+                    <option value={user.id}>
+                      {user.name} {user.phone}
+                    </option>
+                  ))}
+                </select>
+              )}
+              {entity !== 'User' && (
+                <>
+                  <select
+                    className="text statistics-view__form-field"
+                    value={propertyName}
+                    name="propertyName"
+                    onChange={handleChange}
+                  >
+                    <option selected disabled>
+                      Поле
+                    </option>
+                    {ENTITIES.find(el => el.value === entity).fields.map(
+                      field => (
+                        <option value={field.value}>{field.title}</option>
+                      )
+                    )}
+                  </select>
+                  <select
+                    className="text statistics-view__form-field"
+                    value={sortingType}
+                    name="sortingType"
+                    onChange={handleChange}
+                  >
+                    <option selected disabled>
+                      Тип сортировки
+                    </option>
+                    {SORTING_TYPES.map(field => (
+                      <option value={field.value}>{field.title}</option>
+                    ))}
+                  </select>
+                </>
+              )}
             </>
           )}
         </div>
         <div className="statistics-view__form-row">
-          {sortingType === 'Equals' && (
-            <input
-              className="text statistics-view__form-field"
-              type="text"
-              name="valueToEqual"
-              placeholder="Значение"
-              value={valueToEqual}
-              onChange={handleChange}
-            />
-          )}
+          <input
+            className="text statistics-view__form-field"
+            type="date"
+            name="startDate"
+            placeholder="Начальная дата"
+            value={startDate}
+            onChange={handleChange}
+          />
+          <input
+            className="text statistics-view__form-field"
+            type="date"
+            name="endDate"
+            placeholder="Конечная дата"
+            value={endDate}
+            onChange={handleChange}
+          />
+        </div>
+        <div className="statistics-view__form-row">
           <input
             className="text statistics-view__form-field"
             type="number"
@@ -206,11 +239,19 @@ const StatisticsView = () => {
           value="Применить"
         />
       </form>
-      {result.length > 0 && (
+      {(result.length > 0 || (result.orders && result.orders.length > 0)) && (
         <div>
-          {entity === 'Order'
-            ? result.map(order => (
-                <div style={{ margin: '30px' }}>
+          {entity === 'Order' || entity === 'User' ? (
+            <>
+              <div>Общая сумма: {result.sum}</div>
+              {result.orders.map(order => (
+                <div
+                  style={{
+                    border: '1px solid black',
+                    margin: '5px 0',
+                    padding: '5px'
+                  }}
+                >
                   <div>{order.user.name}</div>
                   <div>
                     {order.pastries.map(({ amount, pastry }) => (
@@ -222,18 +263,32 @@ const StatisticsView = () => {
                       </div>
                     ))}
                   </div>
+                  <div>Сумма заказа: {order.sum} ₽</div>
                   <div>
                     {new Date(order.creationDate).toLocaleDateString('ru')}
                   </div>
                 </div>
-              ))
-            : result.map(item => (
-                <div style={{ margin: '20px' }}>
-                  {Object.keys(item).map(key => (
-                    <>{key !== 'id' && <div>{item[key]}</div>}</>
-                  ))}
-                </div>
               ))}
+            </>
+          ) : (
+            entity === 'Pastry' && (
+              <>
+                {result.map(pastry => (
+                  <div
+                    style={{
+                      border: '1px solid black',
+                      margin: '5px 0',
+                      padding: '5px'
+                    }}
+                  >
+                    <div>{pastry.name}</div>
+                    <div>{pastry.price} ₽</div>
+                    <div>Всего заказано за период: {pastry.request}</div>
+                  </div>
+                ))}
+              </>
+            )
+          )}
         </div>
       )}
     </div>

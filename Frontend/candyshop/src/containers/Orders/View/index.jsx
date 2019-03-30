@@ -24,12 +24,14 @@ const OrdersView = () => {
 
   const fetchOrders = async () => {
     try {
-      const data = await getAll(ORDERS);
-      setOrders(data);
+      const { orders } = await getAll(ORDERS);
+      setOrders(orders);
     } catch (error) {
       console.log(error);
     }
   };
+
+  console.log(orders);
 
   return (
     <div className="orders-view">
@@ -60,6 +62,9 @@ const OrdersView = () => {
                       </p>
                     </div>
                   ))}
+                </div>
+                <div>
+                  <strong>Сумма заказа:</strong> {order.sum} ₽
                 </div>
                 <div>
                   {new Date(order.creationDate).toLocaleDateString('ru')}

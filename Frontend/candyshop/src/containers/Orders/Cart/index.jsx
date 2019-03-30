@@ -39,6 +39,7 @@ const OrdersCart = ({
     //setSelectedUser(order.user.id);
     const pastriesIds = order.pastries.map(pastry => pastry.id);
 
+
     for (const pastryId of pastriesIds) {
       const {
         pastry: { id },
@@ -46,7 +47,6 @@ const OrdersCart = ({
       } = order.pastries.find(p => p.id === pastryId);
       handleAmountChange(amount, id);
     }
-
     //setSelectedPastries(pastriesIds);
     setState(prevState => ({ ...prevState, selectedPastries: pastriesIds }));
   };
@@ -152,6 +152,8 @@ const OrdersCart = ({
     }
   };
 
+  console.log(state)
+
   return (
     <div className="orders-cart">
       <div className="orders-cart__containers">
@@ -176,7 +178,7 @@ const OrdersCart = ({
               <Pastry
                 pastry={pastry}
                 className={
-                  !state.selectedPastries.includes(pastry.id)
+                  !state.amounts.map(amount=>amount.pastryId).includes(pastry.id)
                     ? 'orders-cart__item'
                     : 'orders-cart__item orders-cart__item--selected'
                 }

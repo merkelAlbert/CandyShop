@@ -24,6 +24,8 @@ namespace CandyShop.Controllers
             _pastriesService = pastriesService;
         }
 
+        
+
         [HttpPost]
         public async Task<object> AddPastry([FromBody] PastryInfo pastryInfo)
         {
@@ -40,6 +42,7 @@ namespace CandyShop.Controllers
         [HttpGet]
         public async Task<object> GetPastries([FromQuery] QueryFilter filter)
         {
+            
             return await _pastriesService.GetPastries(filter);
         }
 

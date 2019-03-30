@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using CandyShop.DAL;
 using CandyShop.DAL.Models;
 using CandyShop.DTO;
+using CandyShop.DTO.Orders;
 using CandyShop.DTO.Users;
 using CandyShop.Filters;
 

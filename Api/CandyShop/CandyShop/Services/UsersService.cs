@@ -6,6 +6,7 @@ using CandyShop.DAL;
 using CandyShop.DAL.Enums;
 using CandyShop.DAL.Models;
 using CandyShop.DTO;
+using CandyShop.DTO.Orders;
 using CandyShop.DTO.Users;
 using CandyShop.Filters;
 using CandyShop.Interfaces;
@@ -20,6 +21,46 @@ namespace CandyShop.Services
         public UsersService(DatabaseContext databaseContext)
         {
             _databaseContext = databaseContext;
+        }
+
+        private List<User> ApplyFilter(List<User> users, QueryFilter filter)
+        {
+            var prop = typeof(User).GetProperty(filter.PropertyName ?? "");
+            var filteredUsers = users;
+            if (prop != null)
+            {
+                switch (filter.SortingType)
+                {
+                    case SortingType.Asc:
+                    {
+                        filteredUsers = filteredUsers.OrderBy(user => prop.GetValue(user, null))
+                            .Take(filter.Count ?? filteredUsers.Count)
+                            .ToList();
+                        break;
+                    }
+                    case SortingType.Desc:
+                    {
+                        filteredUsers = filteredUsers.OrderByDescending(user => prop.GetValue(user, null))
+                            .Take(filter.Count ?? filteredUsers.Count)
+                            .ToList();
+                        break;
+                    }
+                    case SortingType.Equals:
+                    {
+                        filteredUsers = filteredUsers.Where(user =>
+                                prop.GetValue(user, null).ToString().ToLower() == filter.ValueToEqual.ToLower())
+                            .Take(filter.Count ?? filteredUsers.Count)
+                            .ToList();
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                filteredUsers = filteredUsers.Take(filter.Count ?? filteredUsers.Count).ToList();
+            }
+
+            return filteredUsers;
         }
 
         private User MapUserFromUserInfo(UserInfo userInfo)
@@ -60,42 +101,7 @@ namespace CandyShop.Services
         public async Task<List<UserModel>> GetUsers(QueryFilter filter)
         {
             var users = await _databaseContext.Users.ToListAsync();
-
-            var prop = typeof(User).GetProperty(filter.PropertyName ?? "");
-            var filteredUsers = users;
-            if (prop != null)
-            {
-                switch (filter.SortingType)
-                {
-                    case SortingType.Asc:
-                    {
-                        filteredUsers = users.OrderBy(user => prop.GetValue(user, null))
-                            .Take(filter.Count ?? users.Count)
-                            .ToList();
-                        break;
-                    }
-                    case SortingType.Desc:
-                    {
-                        filteredUsers = users.OrderByDescending(user => prop.GetValue(user, null))
-                            .Take(filter.Count ?? users.Count)
-                            .ToList();
-                        break;
-                    }
-                    case SortingType.Equals:
-                    {
-                        filteredUsers = users.Where(user =>
-                                prop.GetValue(user, null).ToString().ToLower() == filter.ValueToEqual.ToLower())
-                            .Take(filter.Count ?? users.Count)
-                            .ToList();
-                        break;
-                    }
-                }
-            }
-            else
-            {
-                filteredUsers = users.Take(filter.Count ?? users.Count).ToList();
-            }
-
+            var filteredUsers = ApplyFilter(users, filter);
             var userModels = new List<UserModel>();
             foreach (var user in filteredUsers)
             {

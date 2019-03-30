@@ -17,10 +17,12 @@ namespace CandyShop.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IUsersService _usersService;
+        private readonly IOrdersService _ordersService;
 
-        public UsersController(IUsersService usersService)
+        public UsersController(IUsersService usersService, IOrdersService ordersService)
         {
             _usersService = usersService;
+            _ordersService = ordersService;
         }
 
         [HttpPost]
@@ -78,6 +80,25 @@ namespace CandyShop.Controllers
             try
             {
                 return await _usersService.DeleteUser(userId);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("{userId}/orders")]
+        public async Task<object> GetUserOrders([FromRoute] Guid userId, [FromQuery] QueryFilter filter)
+        {
+            try
+            {
+                var orders = await _ordersService.GetOrders(userId, filter);
+                var sum = _ordersService.GetSum(orders);
+                return new
+                {
+                    orders, sum
+                };
             }
             catch (Exception e)
             {

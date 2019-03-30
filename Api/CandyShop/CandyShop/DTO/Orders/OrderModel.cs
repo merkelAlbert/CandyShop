@@ -12,5 +12,6 @@ namespace CandyShop.DTO.Orders
         public UserModel User { get; set; }
         public List<OrderPastryModel> Pastries { get; set; } = new List<OrderPastryModel>();
         public DateTime CreationDate { get; set; }
+        public decimal Sum { get; set; }
     }
 }

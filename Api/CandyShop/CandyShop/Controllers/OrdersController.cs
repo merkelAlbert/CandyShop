@@ -37,7 +37,13 @@ namespace CandyShop.Controllers
         [HttpGet]
         public async Task<object> GetOrders([FromQuery] QueryFilter filter)
         {
-            return await _ordersService.GetOrders(filter);
+            var orders = await _ordersService.GetOrders(default(Guid), filter);
+            var sum = _ordersService.GetSum(orders);
+            return new
+            {
+                orders,
+                sum
+            };
         }
 
         [HttpGet]

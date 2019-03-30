@@ -13,8 +13,9 @@ namespace CandyShop.Interfaces
     {
         Task<OrderModel> AddOrder(OrderInfo orderInfo);
         Task<OrderModel> GetOrder(Guid orderId);
-        Task<List<OrderModel>> GetOrders(QueryFilter filter);
+        Task<List<OrderModel>> GetOrders(Guid userId, QueryFilter filter);
         Task<OrderModel> UpdateOrder(Guid orderId, OrderInfo orderInfo);
         Task<Guid> DeleteOrder(Guid orderId);
+        decimal GetSum(List<OrderModel> ordersModels);
     }
 }
